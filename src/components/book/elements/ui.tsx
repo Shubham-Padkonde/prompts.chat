@@ -231,7 +231,7 @@ export function TryIt({ prompt, description, title, compact = false }: TryItProp
             getContentWithVariables={getContentWithVariables}
           />
         </div>
-        <pre className="p-3 pr-12 bg-muted/50 rounded-lg text-sm whitespace-pre-wrap">{prompt}</pre>
+        <pre className="p-3 pr-12! bg-muted/50 rounded-lg text-sm whitespace-pre-wrap">{prompt}</pre>
       </div>
     );
   }
