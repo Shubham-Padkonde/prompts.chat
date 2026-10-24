@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BotPlatformIcon } from "@/components/bots/bot-platform-icon";
 import type { BotInstallOption } from "@/lib/bots";
+import { BOT_PLATFORM_INFO } from "@/lib/bots/schema";
 
 interface BotInstallProps {
   options: BotInstallOption[];
@@ -94,9 +95,14 @@ export function BotInstall({ options, urls }: BotInstallProps) {
         <Tabs defaultValue={options[0].platform} className="gap-4">
           <TabsList aria-label={t("form.platforms")} className="w-full md:w-full">
             {options.map((option) => (
-              <TabsTrigger key={option.platform} value={option.platform} className="px-1.5 text-xs">
+              <TabsTrigger
+                key={option.platform}
+                value={option.platform}
+                title={option.platformName}
+                className="min-w-0 flex-auto px-1.5 text-xs"
+              >
                 <BotPlatformIcon platform={option.platform} className="h-3.5 w-3.5" />
-                {option.platformName}
+                <span className="truncate">{BOT_PLATFORM_INFO[option.platform].shortName}</span>
               </TabsTrigger>
             ))}
           </TabsList>
