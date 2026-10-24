@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { BotPlatformIcon } from "@/components/bots/bot-platform-icon";
 import { BOT_PLATFORM_INFO, type BotPlatform } from "@/lib/bots/schema";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ interface BotPlatformBadgeProps {
 export function BotPlatformBadge({ platform, className }: BotPlatformBadgeProps) {
   return (
     <Badge variant="outline" className={cn(PLATFORM_STYLES[platform], className)}>
+      <BotPlatformIcon platform={platform} className="h-3 w-3" />
       {BOT_PLATFORM_INFO[platform].name}
     </Badge>
   );

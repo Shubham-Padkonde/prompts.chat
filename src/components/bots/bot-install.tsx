@@ -5,14 +5,12 @@ import { useTranslations } from "next-intl";
 import { Check, Copy, ExternalLink, FileCode2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import type { BotPlatform } from "@/lib/bots/schema";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BotPlatformIcon } from "@/components/bots/bot-platform-icon";
+import type { BotInstallOption } from "@/lib/bots";
 
 interface BotInstallProps {
-  platform: BotPlatform;
-  platformName: string;
-  installUrl: string | null;
-  installPrompt: string;
-  hermesCommand: string | null;
+  options: BotInstallOption[];
   urls: { markdown: string; json: string; skill: string };
 }
 
@@ -44,8 +42,10 @@ function CopyBlock({ text, label }: { text: string; label: string }) {
   );
 }
 
-export function BotInstall({ platform, platformName, installUrl, installPrompt, hermesCommand, urls }: BotInstallProps) {
+function PlatformInstall({ option }: { option: BotInstallOption }) {
   const t = useTranslations("bots");
+  const { platform, platformName, installUrl, installPrompt, command } = option;
+  const hasPrimaryAction = platform === "GROK_BOT" || !!command;
 
   return (
     <div className="space-y-4">
@@ -66,19 +66,49 @@ export function BotInstall({ platform, platformName, installUrl, installPrompt, 
         </div>
       )}
 
-      {hermesCommand && (
+      {command && (
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">{t("hermesCommandHint")}</p>
-          <CopyBlock text={hermesCommand} label={t("copyCommand")} />
+          <CopyBlock text={command} label={t("copyCommand")} />
         </div>
       )}
 
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">
-          {platform === "GROK_BOT" ? t("installPromptFallbackHint") : t("installPromptHint")}
+          {hasPrimaryAction
+            ? t("installPromptPlatformFallbackHint", { platform: platformName })
+            : t("installPromptHint")}
         </p>
         <CopyBlock text={installPrompt} label={t("copyInstallPrompt")} />
       </div>
+    </div>
+  );
+}
+
+export function BotInstall({ options, urls }: BotInstallProps) {
+  const t = useTranslations("bots");
+
+  return (
+    <div className="space-y-4">
+      {options.length > 1 ? (
+        <Tabs defaultValue={options[0].platform} className="gap-4">
+          <TabsList aria-label={t("form.platforms")} className="w-full md:w-full">
+            {options.map((option) => (
+              <TabsTrigger key={option.platform} value={option.platform} className="px-1.5 text-xs">
+                <BotPlatformIcon platform={option.platform} className="h-3.5 w-3.5" />
+                {option.platformName}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {options.map((option) => (
+            <TabsContent key={option.platform} value={option.platform}>
+              <PlatformInstall option={option} />
+            </TabsContent>
+          ))}
+        </Tabs>
+      ) : (
+        options[0] && <PlatformInstall option={options[0]} />
+      )}
 
       <div className="space-y-1 border-t pt-3">
         <p className="text-xs font-medium text-muted-foreground">{t("machineReadable")}</p>

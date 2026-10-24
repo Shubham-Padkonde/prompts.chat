@@ -22,20 +22,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { BotPlatformIcon } from "@/components/bots/bot-platform-icon";
 import {
   BOT_PLATFORMS,
   BOT_PLATFORM_INFO,
   botRoutineSchema,
   botSkillSchema,
+  normalizeBotPlatforms,
   type BotConfig,
   type BotPlatform,
 } from "@/lib/bots/schema";
 import { getBotUrl } from "@/lib/urls";
+import { cn } from "@/lib/utils";
 
 const botFormSchema = z.object({
   title: z.string().trim().min(1).max(200),
   description: z.string().trim().max(500),
-  botPlatform: z.enum(BOT_PLATFORMS),
+  botPlatforms: z.array(z.enum(BOT_PLATFORMS)).min(1),
   installUrl: z
     .string()
     .trim()
@@ -52,7 +56,7 @@ type BotFormValues = z.infer<typeof botFormSchema>;
 export interface BotFormInitialData {
   title: string;
   description: string;
-  botPlatform: BotPlatform;
+  botPlatforms: BotPlatform[];
   installUrl: string;
   content: string;
   isPrivate: boolean;
@@ -81,7 +85,7 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
     defaultValues: {
       title: initialData?.title ?? "",
       description: initialData?.description ?? "",
-      botPlatform: initialData?.botPlatform ?? "OPENCLAW",
+      botPlatforms: initialData?.botPlatforms ?? [],
       installUrl: initialData?.installUrl ?? "",
       content: initialData?.content ?? "",
       isPrivate: initialData?.isPrivate ?? false,
@@ -103,7 +107,7 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
         description: data.description,
         content: data.content,
         isPrivate: data.isPrivate,
-        botPlatform: data.botPlatform,
+        botPlatforms: data.botPlatforms,
         installUrl: data.installUrl,
         botConfig: {
           routines: data.routines,
@@ -161,45 +165,64 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
         </div>
 
         <div className="space-y-4 pb-6 border-b">
-          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>{t("form.name")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("form.namePlaceholder")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="botPlatform"
-              render={({ field }) => (
-                <FormItem className="w-full sm:w-48">
-                  <FormLabel>{t("form.platform")}</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {BOT_PLATFORMS.map((platform) => (
-                        <SelectItem key={platform} value={platform}>
-                          {BOT_PLATFORM_INFO[platform].name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("form.name")}</FormLabel>
+                <FormControl>
+                  <Input placeholder={t("form.namePlaceholder")} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="botPlatforms"
+            render={({ field, fieldState }) => (
+              <FormItem>
+                <p
+                  id="bot-platforms-label"
+                  className={cn("text-sm font-medium leading-none", fieldState.error && "text-destructive")}
+                >
+                  {t("form.platforms")}
+                </p>
+                <FormDescription>{t("form.platformsHint")}</FormDescription>
+                <div role="group" aria-labelledby="bot-platforms-label" className="flex flex-wrap gap-2">
+                  {BOT_PLATFORMS.map((platform) => {
+                    const checked = field.value.includes(platform);
+                    return (
+                      <label
+                        key={platform}
+                        className={cn(
+                          "flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors hover:bg-accent/50",
+                          checked && "border-primary bg-primary/5"
+                        )}
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={(value) =>
+                            field.onChange(
+                              value
+                                ? normalizeBotPlatforms([...field.value, platform])
+                                : field.value.filter((p) => p !== platform)
+                            )
+                          }
+                          onBlur={field.onBlur}
+                        />
+                        <BotPlatformIcon platform={platform} />
+                        {BOT_PLATFORM_INFO[platform].name}
+                      </label>
+                    );
+                  })}
+                </div>
+                {fieldState.error && <p className="text-destructive text-sm">{t("form.platformsRequired")}</p>}
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
