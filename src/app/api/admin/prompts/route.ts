@@ -106,6 +106,7 @@ export async function GET(request: NextRequest) {
           slug: true,
           type: true,
           botPlatform: true,
+          botPlatforms: true,
           isPrivate: true,
           isUnlisted: true,
           isFeatured: true,

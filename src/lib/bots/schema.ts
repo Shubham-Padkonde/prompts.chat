@@ -13,6 +13,33 @@ export function platformFromParam(param: string | undefined): BotPlatform | unde
   return BOT_PLATFORMS.find((platform) => BOT_PLATFORM_INFO[platform].param === param);
 }
 
+/** Dedupes and orders platforms the same way everywhere they are shown */
+export function normalizeBotPlatforms(platforms: readonly BotPlatform[]): BotPlatform[] {
+  return BOT_PLATFORMS.filter((platform) => platforms.includes(platform));
+}
+
+export const botPlatformsSchema = z
+  .array(z.enum(BOT_PLATFORMS))
+  .min(1, { message: "Select at least one platform" })
+  .max(BOT_PLATFORMS.length)
+  .transform(normalizeBotPlatforms);
+
+/** Falls back to the legacy single-platform column for rows the backfill has not reached */
+export function resolveBotPlatforms(record: {
+  botPlatforms?: readonly BotPlatform[] | null;
+  botPlatform?: BotPlatform | null;
+}): BotPlatform[] {
+  const platforms = normalizeBotPlatforms(record.botPlatforms ?? []);
+  if (platforms.length > 0) return platforms;
+  return [record.botPlatform ?? "OPENCLAW"];
+}
+
+/** Column values for a write; botPlatform mirrors the first platform until the column is dropped */
+export function botPlatformsData(platforms: readonly BotPlatform[]) {
+  const botPlatforms = normalizeBotPlatforms(platforms);
+  return { botPlatforms, botPlatform: botPlatforms[0] ?? null };
+}
+
 export const botRoutineSchema = z.object({
   name: z.string().trim().min(1).max(100),
   /** "schedule" runs on a timer, "event" runs when something happens */

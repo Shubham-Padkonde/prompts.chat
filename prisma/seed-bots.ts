@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma, BotPlatform } from "@prisma/client";
+import { botPlatformsData } from "../src/lib/bots/schema";
 
 interface ExampleBot {
   id: string;
@@ -6,7 +7,7 @@ interface ExampleBot {
   title: string;
   description: string;
   content: string;
-  botPlatform: BotPlatform;
+  botPlatforms: BotPlatform[];
   /** Placeholder: set to the Grok Bot template share URL once it exists on x.ai */
   installUrl: string | null;
   botConfig: Prisma.InputJsonObject;
@@ -27,7 +28,7 @@ export const EXAMPLE_BOTS: ExampleBot[] = [
 - Prefer primary sources (official accounts, authors, researchers) over reposts.
 - Never post, like, repost or reply on the user's behalf.
 - Keep the whole briefing under 200 words.`,
-    botPlatform: "GROK_BOT",
+    botPlatforms: ["GROK_BOT"],
     installUrl: null,
     botConfig: {
       routines: [
@@ -62,7 +63,7 @@ export const EXAMPLE_BOTS: ExampleBot[] = [
 - If a bug report has no reproduction steps or version info, comment once and politely ask for them.
 - Never close issues and never assign people.
 - Keep comments under 80 words and sign them as "triage bot".`,
-    botPlatform: "OPENCLAW",
+    botPlatforms: ["OPENCLAW", "HERMES"],
     installUrl: null,
     botConfig: {
       routines: [
@@ -99,7 +100,7 @@ export const EXAMPLE_BOTS: ExampleBot[] = [
 - Pick at most eight papers per digest, ranked by relevance to the topics.
 - For each paper give the title, authors, link and one plain-language takeaway.
 - Skip papers you have already sent in previous digests.`,
-    botPlatform: "HERMES",
+    botPlatforms: ["HERMES", "OPENCLAW"],
     installUrl: null,
     botConfig: {
       routines: [
@@ -120,7 +121,7 @@ export const EXAMPLE_BOTS: ExampleBot[] = [
 /** Creates the example bots if they don't exist yet. Existing rows are left untouched. */
 export async function seedExampleBots(prisma: PrismaClient, authorId: string): Promise<number> {
   let created = 0;
-  for (const { id, ...bot } of EXAMPLE_BOTS) {
+  for (const { id, botPlatforms, ...bot } of EXAMPLE_BOTS) {
     const existing = await prisma.prompt.findUnique({ where: { id }, select: { id: true } });
     if (existing) continue;
 
@@ -128,6 +129,7 @@ export async function seedExampleBots(prisma: PrismaClient, authorId: string): P
       data: {
         id,
         ...bot,
+        ...botPlatformsData(botPlatforms),
         type: "BOT",
         authorId,
         versions: {

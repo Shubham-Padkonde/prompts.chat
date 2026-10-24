@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getBotUrl } from "@/lib/urls";
-import { BOT_PLATFORM_INFO, parseBotConfig, type BotConfig, type BotPlatform } from "./schema";
+import { BOT_PLATFORM_INFO, parseBotConfig, resolveBotPlatforms, type BotConfig, type BotPlatform } from "./schema";
 
 export * from "./schema";
 
@@ -12,6 +12,7 @@ export const botSelect = {
   description: true,
   content: true,
   botPlatform: true,
+  botPlatforms: true,
   installUrl: true,
   botConfig: true,
   isPrivate: true,
@@ -31,7 +32,8 @@ export interface BotView {
   title: string;
   description: string | null;
   instructions: string;
-  platform: BotPlatform;
+  /** Always non-empty, in BOT_PLATFORMS order */
+  platforms: BotPlatform[];
   installUrl: string | null;
   config: BotConfig;
   isPrivate: boolean;
@@ -43,6 +45,10 @@ export interface BotView {
   updatedAt: Date;
 }
 
+export function formatBotPlatforms(platforms: BotPlatform[]): string {
+  return platforms.map((platform) => BOT_PLATFORM_INFO[platform].name).join(", ");
+}
+
 export function toBotView(record: BotRecord): BotView {
   return {
     id: record.id,
@@ -50,7 +56,7 @@ export function toBotView(record: BotRecord): BotView {
     title: record.title,
     description: record.description,
     instructions: record.content,
-    platform: record.botPlatform ?? "OPENCLAW",
+    platforms: resolveBotPlatforms(record),
     installUrl: record.installUrl,
     config: parseBotConfig(record.botConfig),
     isPrivate: record.isPrivate,
@@ -76,7 +82,7 @@ export async function listBots({
   skip = 0,
   take = 24,
 }: { platform?: BotPlatform; skip?: number; take?: number } = {}) {
-  const where: Prisma.PromptWhereInput = { ...publicBotWhere, ...(platform && { botPlatform: platform }) };
+  const where: Prisma.PromptWhereInput = { ...publicBotWhere, ...(platform && { botPlatforms: { has: platform } }) };
   const [records, total] = await Promise.all([
     db.prompt.findMany({
       where,
@@ -122,9 +128,9 @@ export function getBotSkillName(bot: Pick<BotView, "id" | "slug">): string {
 }
 
 /** Prompt the user pastes into an agent that cannot import bots from a URL */
-export function getInstallPrompt(bot: BotView, baseUrl: string): string {
-  const platform = BOT_PLATFORM_INFO[bot.platform].name;
-  return `Go to ${getBotUrls(bot, baseUrl).markdown} and create the "${bot.title}" bot on ${platform} exactly as described there: adopt its instructions as your standing instructions, install its skills, ask me to connect the required connectors, and set up each routine with the given schedule or trigger. Confirm each step when done.`;
+export function getInstallPrompt(bot: BotView, platform: BotPlatform, baseUrl: string): string {
+  const platformName = BOT_PLATFORM_INFO[platform].name;
+  return `Go to ${getBotUrls(bot, baseUrl).markdown} and create the "${bot.title}" bot on ${platformName} exactly as described there: adopt its instructions as your standing instructions, install its skills, ask me to connect the required connectors, and set up each routine with the given schedule or trigger. Confirm each step when done.`;
 }
 
 /** Hermes installs SKILL.md files straight from a URL */
@@ -132,12 +138,32 @@ export function getHermesInstallCommand(bot: BotView, baseUrl: string): string {
   return `hermes skills install ${getBotUrls(bot, baseUrl).skill}`;
 }
 
-function setupCommands(bot: BotView): string[] {
+export interface BotInstallOption {
+  platform: BotPlatform;
+  platformName: string;
+  /** One-click link; only Grok Bot templates have one */
+  installUrl: string | null;
+  installPrompt: string;
+  /** Only Hermes can install a bot with a single CLI command */
+  command: string | null;
+}
+
+export function getBotInstallOptions(bot: BotView, baseUrl: string): BotInstallOption[] {
+  return bot.platforms.map((platform) => ({
+    platform,
+    platformName: BOT_PLATFORM_INFO[platform].name,
+    installUrl: platform === "GROK_BOT" ? bot.installUrl : null,
+    installPrompt: getInstallPrompt(bot, platform, baseUrl),
+    command: platform === "HERMES" ? getHermesInstallCommand(bot, baseUrl) : null,
+  }));
+}
+
+function setupCommands(bot: BotView, platform: BotPlatform): string[] {
   const lines: string[] = [];
   const quote = (s: string) => JSON.stringify(s);
   const { routines, skills } = bot.config;
 
-  if (bot.platform === "OPENCLAW") {
+  if (platform === "OPENCLAW") {
     for (const skill of skills) {
       if (skill.source) lines.push(`openclaw skills install ${skill.source}`);
     }
@@ -146,7 +172,7 @@ function setupCommands(bot: BotView): string[] {
         lines.push(`openclaw automations create ${quote(routine.trigger)} ${quote(routine.prompt)} --name ${quote(routine.name)}`);
       }
     }
-  } else if (bot.platform === "HERMES") {
+  } else if (platform === "HERMES") {
     for (const skill of skills) {
       if (skill.source) lines.push(`hermes skills install ${skill.source}`);
     }
@@ -165,6 +191,7 @@ function botBody(bot: BotView, baseUrl: string): string {
   const sections: string[] = [];
 
   if (bot.description) sections.push(bot.description);
+  sections.push(`## Platforms\n\n${bot.platforms.map((platform) => `- ${BOT_PLATFORM_INFO[platform].name}`).join("\n")}`);
   sections.push(`## Instructions\n\n${bot.instructions}`);
 
   if (routines.length > 0) {
@@ -193,15 +220,24 @@ function botBody(bot: BotView, baseUrl: string): string {
     sections.push(`## Required connectors\n\n${connectors.map((c) => `- ${c}`).join("\n")}`);
   }
 
-  const commands = setupCommands(bot);
   const setup = [
     "1. Adopt the instructions above as your standing instructions for this bot.",
     "2. Install the listed skills.",
     "3. Ask the user to connect each required connector.",
     "4. Create every routine with its schedule or trigger and task.",
   ];
-  if (commands.length > 0) {
-    setup.push("", "Equivalent CLI commands for scheduled routines and skills:", "", "```bash", ...commands, "```");
+  for (const platform of bot.platforms) {
+    const commands = setupCommands(bot, platform);
+    if (commands.length > 0) {
+      setup.push(
+        "",
+        `Equivalent ${BOT_PLATFORM_INFO[platform].name} CLI commands for scheduled routines and skills:`,
+        "",
+        "```bash",
+        ...commands,
+        "```"
+      );
+    }
   }
   sections.push(`## Setup\n\n${setup.join("\n")}`);
   sections.push(`Source: ${getBotUrls(bot, baseUrl).page}`);
@@ -213,7 +249,7 @@ export function botToMarkdown(bot: BotView, baseUrl: string): string {
   const frontmatter = [
     "---",
     `name: ${JSON.stringify(bot.title)}`,
-    `platform: ${bot.platform}`,
+    `platforms: [${bot.platforms.join(", ")}]`,
     ...(bot.description ? [`description: ${JSON.stringify(bot.description)}`] : []),
     `author: ${bot.author.username}`,
     "---",
@@ -227,7 +263,7 @@ export function botToSkill(bot: BotView, baseUrl: string): string {
   const frontmatter = [
     "---",
     `name: ${getBotSkillName(bot)}`,
-    `description: ${JSON.stringify(`${summary}Use this skill to set up or run the "${bot.title}" bot.`)}`,
+    `description: ${JSON.stringify(`${summary}Use this skill to set up or run the "${bot.title}" bot on ${formatBotPlatforms(bot.platforms)}.`)}`,
     "---",
   ].join("\n");
   return `${frontmatter}\n\n# ${bot.title}\n\n${botBody(bot, baseUrl)}\n`;
@@ -239,8 +275,8 @@ export function botToJson(bot: BotView, baseUrl: string) {
     slug: bot.slug,
     name: bot.title,
     description: bot.description,
-    platform: bot.platform,
-    platformName: BOT_PLATFORM_INFO[bot.platform].name,
+    platforms: bot.platforms,
+    platformNames: bot.platforms.map((platform) => BOT_PLATFORM_INFO[platform].name),
     instructions: bot.instructions,
     routines: bot.config.routines,
     skills: bot.config.skills,
@@ -250,6 +286,11 @@ export function botToJson(bot: BotView, baseUrl: string) {
     createdAt: bot.createdAt,
     updatedAt: bot.updatedAt,
     urls: getBotUrls(bot, baseUrl),
-    installPrompt: getInstallPrompt(bot, baseUrl),
+    install: getBotInstallOptions(bot, baseUrl).map(({ platform, installUrl, installPrompt, command }) => ({
+      platform,
+      installUrl,
+      installPrompt,
+      command,
+    })),
   };
 }

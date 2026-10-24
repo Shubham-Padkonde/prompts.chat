@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { generatePromptEmbedding, findAndSaveRelatedPrompts } from "@/lib/ai/embeddings";
 import { generatePromptSlug } from "@/lib/slug";
 import { checkPromptQuality } from "@/lib/ai/quality-check";
-import { BOT_PLATFORMS, botConfigSchema, installUrlSchema } from "@/lib/bots/schema";
+import { BOT_PLATFORMS, botConfigSchema, botPlatformsData, botPlatformsSchema, installUrlSchema } from "@/lib/bots/schema";
 
 const updatePromptSchema = z.object({
   title: z.string().min(1).max(200).optional(),
@@ -29,6 +29,8 @@ const updatePromptSchema = z.object({
   })).optional(),
   workflowLink: z.string().url().optional().or(z.literal("")).nullable(),
   // BOT prompts only
+  botPlatforms: botPlatformsSchema.optional(),
+  /** Deprecated single-platform alias for botPlatforms */
   botPlatform: z.enum(BOT_PLATFORMS).optional(),
   installUrl: installUrlSchema.optional().or(z.literal("")).nullable(),
   botConfig: botConfigSchema.optional(),
@@ -164,7 +166,8 @@ export async function PATCH(
       );
     }
 
-    const { tagIds, contributorIds, categoryId, mediaUrl, title, bestWithModels, bestWithMCP, workflowLink, installUrl, ...data } = parsed.data;
+    const { tagIds, contributorIds, categoryId, mediaUrl, title, bestWithModels, bestWithMCP, workflowLink, installUrl, botPlatforms, botPlatform, ...data } = parsed.data;
+    const nextBotPlatforms = botPlatforms ?? (botPlatform ? [botPlatform] : undefined);
 
     // Regenerate slug if title changed
     let newSlug: string | undefined;
@@ -183,6 +186,7 @@ export async function PATCH(
       ...(bestWithMCP !== undefined && { bestWithMCP }),
       ...(workflowLink !== undefined && { workflowLink: workflowLink || null }),
       ...(installUrl !== undefined && { installUrl: installUrl || null }),
+      ...(nextBotPlatforms && botPlatformsData(nextBotPlatforms)),
     };
 
     // Update prompt
