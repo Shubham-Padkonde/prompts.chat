@@ -22,9 +22,11 @@ export interface AnnouncementBannerConfig {
   cta?: string;
 }
 
-// Edit this to change/disable the active announcement.
-// Set to `null` to hide the banner entirely.
-export const ACTIVE_ANNOUNCEMENT: AnnouncementBannerConfig | null = {
+// Set to `true` to show the announcement banner above the header again.
+export const ANNOUNCEMENT_ENABLED = false;
+
+// Edit this to change the announcement content.
+const LATENTSHIFT_ANNOUNCEMENT: AnnouncementBannerConfig = {
   id: "latentshift-istanbul-2026",
   message: (
     <>
@@ -72,6 +74,9 @@ export const ACTIVE_ANNOUNCEMENT: AnnouncementBannerConfig | null = {
     </>
   ),
 };
+
+export const ACTIVE_ANNOUNCEMENT: AnnouncementBannerConfig | null =
+  ANNOUNCEMENT_ENABLED ? LATENTSHIFT_ANNOUNCEMENT : null;
 
 export function AnnouncementBanner({
   announcement = ACTIVE_ANNOUNCEMENT,
