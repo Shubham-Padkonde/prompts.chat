@@ -1,9 +1,8 @@
 /* eslint-disable @next/next/no-img-element -- satori renders plain <img>, next/image does not apply */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { renderToStaticMarkup } from "react-dom/server";
 import { ImageResponse } from "next/og";
-import type { ReactElement } from "react";
+import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
 import { BOT_ICON_COMPONENTS } from "@/components/bots/bot-avatar";
 import { GrokLogo } from "@/components/bots/bot-platform-icon";
 import { getConfig } from "@/lib/config";
@@ -36,10 +35,23 @@ function tileColors(color: BotColor | null) {
   return { background: `${base}26`, border: `${base}4d`, text };
 }
 
-/** Satori can't render lucide's forwardRef components, so icons go in as SVG images */
-function svgDataUri(element: ReactElement): string {
-  const markup = renderToStaticMarkup(element).replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
-  return `data:image/svg+xml;base64,${Buffer.from(markup).toString("base64")}`;
+type RenderFn = (props: Record<string, unknown>, ref: null) => ReactNode;
+
+/**
+ * Satori only understands host elements, and react-dom/server is off limits in
+ * app routes, so hook-free icon components (lucide's forwardRefs, GrokLogo) are
+ * expanded into plain <svg> trees here.
+ */
+function expandIcon(node: ReactNode): ReactNode {
+  if (!isValidElement(node)) return node;
+  const element = node as ReactElement<Record<string, unknown>>;
+  const type = element.type as unknown;
+  if (typeof type === "function") return expandIcon((type as RenderFn)(element.props, null));
+  if (typeof type === "object" && type !== null && "render" in type) {
+    return expandIcon((type as { render: RenderFn }).render(element.props, null));
+  }
+  const children = Children.toArray(element.props.children as ReactNode).map(expandIcon);
+  return cloneElement(element, { className: undefined }, ...children);
 }
 
 async function publicFileDataUri(file: string, mime: string): Promise<string> {
@@ -47,15 +59,17 @@ async function publicFileDataUri(file: string, mime: string): Promise<string> {
   return `data:${mime};base64,${data.toString("base64")}`;
 }
 
-async function platformLogos(): Promise<Record<BotPlatform, string>> {
+const LOGO_SIZE = 32;
+
+async function platformLogos(): Promise<Record<BotPlatform, ReactNode>> {
   const [openclaw, hermes] = await Promise.all([
     publicFileDataUri("bots/openclaw.svg", "image/svg+xml"),
     publicFileDataUri("bots/hermes.png", "image/png"),
   ]);
   return {
-    GROK_BOT: svgDataUri(<GrokLogo width={64} height={64} color="#18181b" />),
-    OPENCLAW: openclaw,
-    HERMES: hermes,
+    GROK_BOT: expandIcon(<GrokLogo width={LOGO_SIZE} height={LOGO_SIZE} fill="#18181b" />),
+    OPENCLAW: <img src={openclaw} width={LOGO_SIZE} height={LOGO_SIZE} alt="" />,
+    HERMES: <img src={hermes} width={LOGO_SIZE} height={LOGO_SIZE} alt="" />,
   };
 }
 
@@ -64,7 +78,7 @@ function truncate(text: string, max: number): string {
   return clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;
 }
 
-function PlatformChips({ platforms, logos }: { platforms: BotPlatform[]; logos: Record<BotPlatform, string> }) {
+function PlatformChips({ platforms, logos }: { platforms: BotPlatform[]; logos: Record<BotPlatform, ReactNode> }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
       {platforms.map((platform) => (
@@ -83,7 +97,7 @@ function PlatformChips({ platforms, logos }: { platforms: BotPlatform[]; logos: 
             color: "#18181b",
           }}
         >
-          <img src={logos[platform]} width={32} height={32} alt="" />
+          {logos[platform]}
           <span>{BOT_PLATFORM_INFO[platform].name}</span>
         </div>
       ))}
@@ -131,7 +145,7 @@ export async function renderBotOgImage(bot: BotOgImageInput | null) {
   const logos = await platformLogos();
   const tile = tileColors(bot.color);
   const Icon = BOT_ICON_COMPONENTS[bot.icon ?? "bot"];
-  const iconSrc = svgDataUri(<Icon width={112} height={112} color={tile.text} strokeWidth={1.75} />);
+  const icon = expandIcon(<Icon size={112} color={tile.text} strokeWidth={1.75} />);
   const description = truncate(bot.description || bot.instructions, 180);
   const authorName = bot.author.name || bot.author.username;
 
@@ -177,7 +191,7 @@ export async function renderBotOgImage(bot: BotOgImageInput | null) {
               border: `3px solid ${tile.border}`,
             }}
           >
-            <img src={iconSrc} width={112} height={112} alt="" />
+            {icon}
           </div>
           <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 16 }}>
             <div
@@ -242,7 +256,7 @@ export async function renderBotsListingOgImage({ heading, description }: { headi
   const primary = config.theme?.colors?.primary || "#6366f1";
   const logos = await platformLogos();
   const Icon = BOT_ICON_COMPONENTS.bot;
-  const iconSrc = svgDataUri(<Icon width={112} height={112} color={primary} strokeWidth={1.75} />);
+  const icon = expandIcon(<Icon size={112} color={primary} strokeWidth={1.75} />);
 
   return new ImageResponse(
     (
@@ -271,7 +285,7 @@ export async function renderBotsListingOgImage({ heading, description }: { headi
               border: `3px solid ${primary}40`,
             }}
           >
-            <img src={iconSrc} width={112} height={112} alt="" />
+            {icon}
           </div>
           <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 16 }}>
             <div style={{ display: "flex", fontSize: 72, fontWeight: 700, color: "#18181b", letterSpacing: "-0.02em" }}>

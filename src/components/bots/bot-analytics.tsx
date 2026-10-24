@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect, type ComponentProps } from "react";
+import { useEffect, useRef, type ComponentProps } from "react";
 import Link from "next/link";
 import { analyticsBot } from "@/lib/analytics";
 
 export function BotViewTracker({ botId, botTitle }: { botId: string; botTitle: string }) {
+  // Guards against Strict Mode re-running the effect and title-only re-renders
+  const trackedId = useRef<string | null>(null);
+
   useEffect(() => {
+    if (trackedId.current === botId) return;
+    trackedId.current = botId;
     analyticsBot.view(botId, botTitle);
   }, [botId, botTitle]);
 

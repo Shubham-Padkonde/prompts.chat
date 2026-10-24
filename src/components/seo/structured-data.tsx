@@ -269,6 +269,7 @@ interface BotSchemaInput {
 export function botSchema(bot: BotSchemaInput): Schema[] {
   const baseUrl = getBaseUrl();
   const url = absoluteUrl(bot.path);
+  const keywords = [...new Map(bot.keywords.map((k) => [k.toLowerCase(), k])).values()];
   const author = {
     "@type": "Person",
     name: bot.author.name,
@@ -301,7 +302,7 @@ export function botSchema(bot: BotSchemaInput): Schema[] {
       applicationSubCategory: "AI agent",
       operatingSystem: bot.platforms.join(", "),
       ...(bot.features.length > 0 && { featureList: bot.features }),
-      ...(bot.keywords.length > 0 && { keywords: bot.keywords.join(", ") }),
+      ...(keywords.length > 0 && { keywords: keywords.join(", ") }),
       author,
       creator: author,
       dateCreated: bot.dateCreated.toISOString(),
