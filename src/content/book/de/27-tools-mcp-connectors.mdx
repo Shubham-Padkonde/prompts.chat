@@ -181,7 +181,7 @@ Ein wiederverwendbarer Skill zur Issue-Sichtung könnte die Methode ergänzen: D
 
 Werkzeugausgaben müssen weiterhin beurteilt werden. Ein Issue-Kommentar, ein Dokument oder ein Suchergebnis kann Fehler oder Text enthalten, der wie eine Anweisung aussieht. Behandle abgerufene Inhalte als Daten, statt ihnen zu erlauben, die Nutzeranfrage oder die Anwendungsregeln zu verändern. MCP-Unterstützung allein macht einen Server oder seine Inhalte nicht vertrauenswürdig.
 
-Wenn ein Lesevorgang fehlschlägt, kann der Agent den Fehler melden oder eine sinnvolle Alternative versuchen. Läuft ein Schreibvorgang in ein Zeitlimit, sollte er vor einer Wiederholung prüfen, ob die Änderung stattgefunden hat. Sonst könnte ein erneuter Versuch ein doppeltes Issue erstellen. Zugangsdaten gehören in die Verbindungseinstellungen der Integration, nicht in den Aufgaben-Prompt.
+Wenn ein Lesevorgang fehlschlägt, kann der Agent den Fehler melden oder eine sinnvolle Alternative versuchen. Läuft ein Schreibvorgang in ein Zeitlimit, sollte er vor einer Wiederholung prüfen, ob die Änderung stattgefunden hat. Sonst könnte ein erneuter Versuch ein doppeltes Issue erstellen. Zugangsdaten gehören in die Verbindungseinstellungen der Integration, nicht in den Aufgaben-Prompt. Diese Regeln sind noch wichtiger, wenn ein Bot Werkzeuge nach Zeitplan nutzt, während du nicht da bist, wie in [Always-On-Bots](/book/28-persistent-bots) beschrieben.
 
 <Quiz
   question="Wie können ein Konnektor, MCP und ein Werkzeug zusammenarbeiten?"

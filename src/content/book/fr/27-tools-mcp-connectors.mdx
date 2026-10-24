@@ -181,7 +181,7 @@ Un skill de tri réutilisable pourrait ajouter la méthode : chercher les doublo
 
 Les résultats d'outils demandent toujours du jugement. Un commentaire de ticket, un document ou un résultat de recherche peut contenir des erreurs ou du texte qui ressemble à une instruction. Traitez le contenu récupéré comme des données, sans le laisser changer la demande de l'utilisateur ou les règles de l'application. Le support de MCP ne suffit pas à rendre un serveur ou son contenu digne de confiance.
 
-Si une lecture échoue, l'agent peut signaler l'erreur ou essayer une alternative raisonnable. Si une écriture dépasse le délai prévu, il devrait vérifier si la modification a eu lieu avant de réessayer. Sinon, une nouvelle tentative pourrait créer un doublon. Les identifiants de connexion doivent rester dans la configuration de l'intégration, pas dans le prompt de la tâche.
+Si une lecture échoue, l'agent peut signaler l'erreur ou essayer une alternative raisonnable. Si une écriture dépasse le délai prévu, il devrait vérifier si la modification a eu lieu avant de réessayer. Sinon, une nouvelle tentative pourrait créer un doublon. Les identifiants de connexion doivent rester dans la configuration de l'intégration, pas dans le prompt de la tâche. Ces règles comptent encore plus quand un bot utilise des outils selon un planning pendant votre absence, comme le décrit [Bots toujours actifs](/book/28-persistent-bots).
 
 <Quiz
   question="Comment un connecteur, MCP et un outil peuvent-ils fonctionner ensemble ?"

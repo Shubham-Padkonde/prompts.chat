@@ -181,7 +181,7 @@ Una habilidad reutilizable para clasificar incidencias podría añadir el métod
 
 Los resultados de las herramientas siguen necesitando criterio. Un comentario de una incidencia, un documento o un resultado de búsqueda puede contener errores o texto que parezca una instrucción. Trata el contenido recuperado como datos y no permitas que cambie la solicitud del usuario o las reglas de la aplicación. Admitir MCP no hace que un servidor o su contenido sean fiables por sí solos.
 
-Si falla una lectura, el agente puede informar del error o probar una alternativa razonable. Si una escritura agota el tiempo de espera, debería comprobar si el cambio se produjo antes de repetirla. De lo contrario, el reintento podría crear una incidencia duplicada. Las credenciales pertenecen a la configuración de conexión de la integración, no al prompt de la tarea.
+Si falla una lectura, el agente puede informar del error o probar una alternativa razonable. Si una escritura agota el tiempo de espera, debería comprobar si el cambio se produjo antes de repetirla. De lo contrario, el reintento podría crear una incidencia duplicada. Las credenciales pertenecen a la configuración de conexión de la integración, no al prompt de la tarea. Estas reglas importan aún más cuando un bot usa herramientas de forma programada mientras no estás, como se describe en [Bots siempre activos](/book/28-persistent-bots).
 
 <Quiz
   question="¿Cómo pueden trabajar juntos un conector, MCP y una herramienta?"

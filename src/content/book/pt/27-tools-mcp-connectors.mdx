@@ -181,7 +181,7 @@ Uma skill reutilizável de triagem poderia acrescentar o método: buscar duplica
 
 A saída da ferramenta ainda precisa ser avaliada. Um comentário de issue, um documento ou um resultado de busca pode conter erros ou texto que parece uma instrução. Trate o conteúdo recuperado como dados, sem permitir que ele altere a solicitação do usuário ou as regras da aplicação. O suporte a MCP, sozinho, não torna um servidor ou seu conteúdo confiável.
 
-Se uma leitura falhar, o agente pode informar o erro ou tentar uma alternativa razoável. Se uma escrita exceder o tempo de espera, ele deve verificar se a alteração aconteceu antes de repeti-la. Caso contrário, uma nova tentativa pode criar uma issue duplicada. As credenciais devem ficar na configuração de conexão da integração, não no prompt da tarefa.
+Se uma leitura falhar, o agente pode informar o erro ou tentar uma alternativa razoável. Se uma escrita exceder o tempo de espera, ele deve verificar se a alteração aconteceu antes de repeti-la. Caso contrário, uma nova tentativa pode criar uma issue duplicada. As credenciais devem ficar na configuração de conexão da integração, não no prompt da tarefa. Essas regras importam ainda mais quando um bot usa ferramentas em horários agendados enquanto você está fora, como descrito em [Bots sempre ativos](/book/28-persistent-bots).
 
 <Quiz
   question="Como um conector, o MCP e uma ferramenta podem trabalhar juntos?"

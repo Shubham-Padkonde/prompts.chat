@@ -181,7 +181,7 @@ Una skill riutilizzabile di classificazione potrebbe aggiungere il metodo: cerca
 
 L'output degli strumenti richiede comunque giudizio. Un commento a una issue, un documento o un risultato di ricerca può contenere errori o testo che sembra un'istruzione. Tratta il contenuto recuperato come dati, senza permettergli di cambiare la richiesta dell'utente o le regole dell'applicazione. Il solo supporto a MCP non rende affidabile un server o il suo contenuto.
 
-Se una lettura fallisce, l'agente può segnalare l'errore o provare un'alternativa ragionevole. Se una scrittura va in timeout, dovrebbe controllare se la modifica è avvenuta prima di ripeterla. Altrimenti, un nuovo tentativo potrebbe creare una issue duplicata. Le credenziali appartengono alla configurazione della connessione dell'integrazione, non al prompt dell'attività.
+Se una lettura fallisce, l'agente può segnalare l'errore o provare un'alternativa ragionevole. Se una scrittura va in timeout, dovrebbe controllare se la modifica è avvenuta prima di ripeterla. Altrimenti, un nuovo tentativo potrebbe creare una issue duplicata. Le credenziali appartengono alla configurazione della connessione dell'integrazione, non al prompt dell'attività. Queste regole contano ancora di più quando un bot usa strumenti secondo una pianificazione mentre sei via, come descritto in [Bot sempre attivi](/book/28-persistent-bots).
 
 <Quiz
   question="Come possono lavorare insieme un connettore, MCP e uno strumento?"
