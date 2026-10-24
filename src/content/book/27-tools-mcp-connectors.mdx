@@ -181,7 +181,7 @@ A reusable triage skill could add the method: check for duplicates, compare repr
 
 Tool output still needs judgment. An issue comment, a document, or a search result can contain mistakes or text that looks like an instruction. Treat retrieved content as data, rather than allowing it to change the user's request or the application's rules. MCP support alone does not make a server or its contents trustworthy.
 
-If a read fails, the agent can report the error or try a reasonable alternative. If a write times out, it should check whether the change happened before repeating it. Otherwise, a retry might create a duplicate issue. Credentials belong in the integration's connection setup, not in the task prompt.
+If a read fails, the agent can report the error or try a reasonable alternative. If a write times out, it should check whether the change happened before repeating it. Otherwise, a retry might create a duplicate issue. Credentials belong in the integration's connection setup, not in the task prompt. These rules matter even more when a bot uses tools on a schedule while you are away, as described in [Always-On Bots](/book/28-persistent-bots).
 
 <Quiz
   question="How can a connector, MCP, and a tool work together?"
