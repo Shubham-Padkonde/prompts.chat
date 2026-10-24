@@ -89,4 +89,16 @@ export default defineConfig({
       ],
     },
   },
+
+  // Announcement bar shown above the header on every page. Set to null to hide it.
+  // Example:
+  // announcement: {
+  //   id: "my-event-2026", // change the id to re-show the bar to users who dismissed it
+  //   message: "prompts.chat is sponsoring My Event",
+  //   messageShort: "prompts.chat × My Event",
+  //   href: "https://example.com/",
+  //   external: true,
+  //   cta: "Learn more →",
+  // },
+  announcement: null,
 });

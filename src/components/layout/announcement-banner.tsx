@@ -5,83 +5,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Sparkles, X } from "lucide-react";
 import { useBranding } from "@/components/providers/branding-provider";
-
-export interface AnnouncementBannerConfig {
-  // Unique id used for the localStorage dismissal key. Bump this to re-show
-  // the banner after editing the message for a new announcement.
-  id: string;
-  // Optional href; if provided the banner becomes a link.
-  href?: string;
-  // Whether the link should open in a new tab. Defaults to true for external links.
-  external?: boolean;
-  // Main message; rendered on small+ screens.
-  message: React.ReactNode;
-  // Shorter message rendered on mobile (falls back to `message`).
-  messageShort?: React.ReactNode;
-  // Optional call-to-action label rendered after the message (e.g. "View session →").
-  cta?: string;
-}
-
-// Set to `true` to show the announcement banner above the header again.
-export const ANNOUNCEMENT_ENABLED = false;
-
-// Edit this to change the announcement content.
-const LATENTSHIFT_ANNOUNCEMENT: AnnouncementBannerConfig = {
-  id: "latentshift-istanbul-2026",
-  message: (
-    <>
-      <Link
-        href="https://latentshift.ai/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:underline"
-      >
-        <span className="font-semibold">prompts.chat</span> is sponsoring to{" "}
-        <span className="font-semibold">LatentShift AI Conference</span> in 17
-        October 2026 in Istanbul
-      </Link>{" "}
-      ·{" "}
-      <Link
-        href="https://latentshift.ai/cfp/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-semibold underline-offset-2 hover:underline"
-      >
-        CfPs are open until 15 Aug →
-      </Link>
-    </>
-  ),
-  messageShort: (
-    <>
-      <Link
-        href="https://latentshift.ai/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:underline"
-      >
-        <span className="font-semibold">prompts.chat</span> × LatentShift AI ·
-        Istanbul
-      </Link>{" "}
-      ·{" "}
-      <Link
-        href="https://latentshift.ai/cfp/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-semibold underline-offset-2 hover:underline"
-      >
-        CfPs open until 15 Aug →
-      </Link>
-    </>
-  ),
-};
-
-export const ACTIVE_ANNOUNCEMENT: AnnouncementBannerConfig | null =
-  ANNOUNCEMENT_ENABLED ? LATENTSHIFT_ANNOUNCEMENT : null;
+import type { AnnouncementConfig } from "@/lib/config";
 
 export function AnnouncementBanner({
-  announcement = ACTIVE_ANNOUNCEMENT,
+  announcement,
 }: {
-  announcement?: AnnouncementBannerConfig | null;
+  announcement?: AnnouncementConfig | null;
 }) {
   const branding = useBranding();
   const searchParams = useSearchParams();

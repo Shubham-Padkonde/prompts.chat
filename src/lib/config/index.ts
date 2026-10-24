@@ -67,6 +67,22 @@ export interface HomepageConfig {
   };
 }
 
+export interface AnnouncementConfig {
+  // Unique id used for the localStorage dismissal key. Change it to re-show
+  // the banner to users who dismissed a previous announcement.
+  id: string;
+  // Main message; rendered on small+ screens.
+  message: string;
+  // Shorter message rendered on mobile (falls back to `message`).
+  messageShort?: string;
+  // Optional link; if provided the whole banner becomes a link.
+  href?: string;
+  // Open `href` in a new tab.
+  external?: boolean;
+  // Optional call-to-action label rendered after the message (e.g. "Learn more →").
+  cta?: string;
+}
+
 export interface PromptsConfig {
   branding: BrandingConfig;
   theme: ThemeConfig;
@@ -74,6 +90,8 @@ export interface PromptsConfig {
   i18n: I18nConfig;
   features: FeaturesConfig;
   homepage?: HomepageConfig;
+  // Site-wide announcement bar above the header. Omit to hide it.
+  announcement?: AnnouncementConfig | null;
 }
 
 export function defineConfig(config: PromptsConfig): PromptsConfig {
@@ -162,6 +180,7 @@ function applyEnvOverrides(config: PromptsConfig): PromptsConfig {
       achievements: { enabled: false },
       sponsors: { enabled: false, items: [] },
     } : config.homepage,
+    announcement: config.announcement,
   };
 }
 

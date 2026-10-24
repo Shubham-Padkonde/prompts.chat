@@ -193,7 +193,7 @@ export default async function RootLayout({
             <>
               <LocaleDetector />
               <div className="relative min-h-screen flex flex-col">
-                <AnnouncementBanner />
+                <AnnouncementBanner announcement={config.announcement} />
                 <Header authProvider={config.auth.provider} allowRegistration={config.auth.allowRegistration} />
                 <main className="flex-1">{children}</main>
                 <Footer />
