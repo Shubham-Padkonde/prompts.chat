@@ -40,6 +40,63 @@ export function botPlatformsData(platforms: readonly BotPlatform[]) {
   return { botPlatforms, botPlatform: botPlatforms[0] ?? null };
 }
 
+/** Preset lucide icons a bot can use; keys map to components in components/bots/bot-avatar.tsx */
+export const BOT_ICONS = [
+  "bot",
+  "sparkles",
+  "rocket",
+  "brain",
+  "zap",
+  "mail",
+  "inbox",
+  "message-square",
+  "bell",
+  "calendar",
+  "clock",
+  "newspaper",
+  "megaphone",
+  "search",
+  "radar",
+  "globe",
+  "plane",
+  "receipt",
+  "wallet",
+  "dollar-sign",
+  "chart",
+  "briefcase",
+  "shopping-cart",
+  "code",
+  "terminal",
+  "git-branch",
+  "bug",
+  "shield",
+  "book-open",
+  "graduation-cap",
+  "lightbulb",
+  "wrench",
+  "palette",
+  "camera",
+  "music",
+  "heart",
+  "coffee",
+] as const;
+export type BotIconName = (typeof BOT_ICONS)[number];
+
+/** Preset colors; each has light and dark mode styles in components/bots/bot-avatar.tsx */
+export const BOT_COLORS = ["slate", "red", "orange", "amber", "lime", "emerald", "teal", "sky", "blue", "indigo", "violet", "pink"] as const;
+export type BotColor = (typeof BOT_COLORS)[number];
+
+export function isBotIconName(value: string): value is BotIconName {
+  return (BOT_ICONS as readonly string[]).includes(value);
+}
+
+export function isBotColor(value: string): value is BotColor {
+  return (BOT_COLORS as readonly string[]).includes(value);
+}
+
+export const botIconSchema = z.enum(BOT_ICONS);
+export const botColorSchema = z.enum(BOT_COLORS);
+
 export const botRoutineSchema = z.object({
   name: z.string().trim().min(1).max(100),
   /** "schedule" runs on a timer, "event" runs when something happens */

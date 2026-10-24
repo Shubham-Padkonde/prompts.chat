@@ -8,7 +8,7 @@ import { generatePromptEmbedding, findAndSaveRelatedPrompts } from "@/lib/ai/emb
 import { generatePromptSlug } from "@/lib/slug";
 import { checkPromptQuality } from "@/lib/ai/quality-check";
 import { isSimilarContent, normalizeContent } from "@/lib/similarity";
-import { BOT_PLATFORMS, EMPTY_BOT_CONFIG, botConfigSchema, botPlatformsData, botPlatformsSchema, installUrlSchema } from "@/lib/bots/schema";
+import { BOT_PLATFORMS, EMPTY_BOT_CONFIG, botColorSchema, botConfigSchema, botIconSchema, botPlatformsData, botPlatformsSchema, installUrlSchema } from "@/lib/bots/schema";
 
 const promptSchema = z.object({
   title: z.string().min(1).max(200),
@@ -34,6 +34,8 @@ const promptSchema = z.object({
   botPlatforms: botPlatformsSchema.optional(),
   /** Deprecated single-platform alias for botPlatforms */
   botPlatform: z.enum(BOT_PLATFORMS).optional(),
+  botIcon: botIconSchema.nullish().or(z.literal("")),
+  botColor: botColorSchema.nullish().or(z.literal("")),
   installUrl: installUrlSchema.optional().or(z.literal("")),
   botConfig: botConfigSchema.optional(),
 }).refine((data) => data.type !== "BOT" || !!data.botPlatforms || !!data.botPlatform, {
@@ -62,7 +64,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { title, description, content, type, structuredFormat, categoryId, tagIds, contributorIds, isPrivate, mediaUrl, requiresMediaUpload, requiredMediaType, requiredMediaCount, bestWithModels, bestWithMCP, workflowLink, botPlatforms, botPlatform, installUrl, botConfig } = parsed.data;
+    const { title, description, content, type, structuredFormat, categoryId, tagIds, contributorIds, isPrivate, mediaUrl, requiresMediaUpload, requiredMediaType, requiredMediaCount, bestWithModels, bestWithMCP, workflowLink, botPlatforms, botPlatform, botIcon, botColor, installUrl, botConfig } = parsed.data;
     const isBot = type === "BOT";
 
     // Check if user is flagged (for auto-delisting and daily limit)
@@ -198,6 +200,8 @@ export async function POST(request: Request) {
         workflowLink: workflowLink || null,
         ...(isBot && {
           ...botPlatformsData(botPlatforms ?? (botPlatform ? [botPlatform] : [])),
+          botIcon: botIcon || null,
+          botColor: botColor || null,
           installUrl: installUrl || null,
           botConfig: botConfig ?? EMPTY_BOT_CONFIG,
         }),

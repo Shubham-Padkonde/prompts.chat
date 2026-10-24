@@ -1,7 +1,17 @@
 import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getBotUrl } from "@/lib/urls";
-import { BOT_PLATFORM_INFO, parseBotConfig, resolveBotPlatforms, type BotConfig, type BotPlatform } from "./schema";
+import {
+  BOT_PLATFORM_INFO,
+  isBotColor,
+  isBotIconName,
+  parseBotConfig,
+  resolveBotPlatforms,
+  type BotColor,
+  type BotConfig,
+  type BotIconName,
+  type BotPlatform,
+} from "./schema";
 
 export * from "./schema";
 
@@ -13,6 +23,8 @@ export const botSelect = {
   content: true,
   botPlatform: true,
   botPlatforms: true,
+  botIcon: true,
+  botColor: true,
   installUrl: true,
   botConfig: true,
   isPrivate: true,
@@ -34,6 +46,10 @@ export interface BotView {
   instructions: string;
   /** Always non-empty, in BOT_PLATFORMS order */
   platforms: BotPlatform[];
+  /** Preset icon key; null means the default icon */
+  icon: BotIconName | null;
+  /** Preset color key; null means the neutral default */
+  color: BotColor | null;
   installUrl: string | null;
   config: BotConfig;
   isPrivate: boolean;
@@ -57,6 +73,8 @@ export function toBotView(record: BotRecord): BotView {
     description: record.description,
     instructions: record.content,
     platforms: resolveBotPlatforms(record),
+    icon: record.botIcon && isBotIconName(record.botIcon) ? record.botIcon : null,
+    color: record.botColor && isBotColor(record.botColor) ? record.botColor : null,
     installUrl: record.installUrl,
     config: parseBotConfig(record.botConfig),
     isPrivate: record.isPrivate,
@@ -277,6 +295,8 @@ export function botToJson(bot: BotView, baseUrl: string) {
     description: bot.description,
     platforms: bot.platforms,
     platformNames: bot.platforms.map((platform) => BOT_PLATFORM_INFO[platform].name),
+    icon: bot.icon,
+    color: bot.color,
     instructions: bot.instructions,
     routines: bot.config.routines,
     skills: bot.config.skills,

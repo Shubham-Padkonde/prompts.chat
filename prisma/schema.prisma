@@ -134,6 +134,8 @@ model Prompt {
   workflowLink        String? // URL to test/demo the workflow when prompt has previous/next connections
   botPlatform         BotPlatform? // Deprecated: superseded by botPlatforms, kept in sync with botPlatforms[0] until it is dropped
   botPlatforms        BotPlatform[]       @default([]) // BOT prompts only: agent platforms the bot supports
+  botIcon             String? // BOT prompts only: a curated lucide icon name or an emoji, see src/lib/bots/schema.ts
+  botColor            String? // BOT prompts only: a curated palette color name, see src/lib/bots/schema.ts
   installUrl          String? // BOT prompts only: one-click install link (e.g. Grok Bot template share URL)
   botConfig           Json? // BOT prompts only: { routines, skills, connectors }, see src/lib/bots/schema.ts
 

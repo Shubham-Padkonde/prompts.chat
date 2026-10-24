@@ -24,13 +24,18 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BotPlatformIcon } from "@/components/bots/bot-platform-icon";
+import { BotAppearancePicker } from "@/components/bots/bot-appearance-picker";
 import {
+  BOT_COLORS,
+  BOT_ICONS,
   BOT_PLATFORMS,
   BOT_PLATFORM_INFO,
   botRoutineSchema,
   botSkillSchema,
   normalizeBotPlatforms,
+  type BotColor,
   type BotConfig,
+  type BotIconName,
   type BotPlatform,
 } from "@/lib/bots/schema";
 import { getBotUrl } from "@/lib/urls";
@@ -40,6 +45,8 @@ const botFormSchema = z.object({
   title: z.string().trim().min(1).max(200),
   description: z.string().trim().max(500),
   botPlatforms: z.array(z.enum(BOT_PLATFORMS)).min(1),
+  botIcon: z.union([z.literal(""), z.enum(BOT_ICONS)]),
+  botColor: z.union([z.literal(""), z.enum(BOT_COLORS)]),
   installUrl: z
     .string()
     .trim()
@@ -57,6 +64,8 @@ export interface BotFormInitialData {
   title: string;
   description: string;
   botPlatforms: BotPlatform[];
+  botIcon: BotIconName | null;
+  botColor: BotColor | null;
   installUrl: string;
   content: string;
   isPrivate: boolean;
@@ -86,6 +95,8 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
       title: initialData?.title ?? "",
       description: initialData?.description ?? "",
       botPlatforms: initialData?.botPlatforms ?? [],
+      botIcon: initialData?.botIcon ?? "",
+      botColor: initialData?.botColor ?? "",
       installUrl: initialData?.installUrl ?? "",
       content: initialData?.content ?? "",
       isPrivate: initialData?.isPrivate ?? false,
@@ -108,6 +119,8 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
         content: data.content,
         isPrivate: data.isPrivate,
         botPlatforms: data.botPlatforms,
+        botIcon: data.botIcon || null,
+        botColor: data.botColor || null,
         installUrl: data.installUrl,
         botConfig: {
           routines: data.routines,
@@ -165,19 +178,30 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
         </div>
 
         <div className="space-y-4 pb-6 border-b">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("form.name")}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t("form.namePlaceholder")} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+            <div className="space-y-2">
+              <p className="text-sm font-medium leading-none">{t("form.appearance")}</p>
+              <BotAppearancePicker
+                icon={form.watch("botIcon")}
+                color={form.watch("botColor")}
+                onIconChange={(icon) => form.setValue("botIcon", icon as BotFormValues["botIcon"], { shouldDirty: true })}
+                onColorChange={(color) => form.setValue("botColor", color as BotFormValues["botColor"], { shouldDirty: true })}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>{t("form.name")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("form.namePlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           <FormField
             control={form.control}

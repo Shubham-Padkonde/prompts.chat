@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma, BotPlatform } from "@prisma/client";
-import { botPlatformsData } from "../src/lib/bots/schema";
+import { botPlatformsData, type BotColor, type BotIconName } from "../src/lib/bots/schema";
 
 interface ExampleBot {
   id: string;
@@ -8,6 +8,8 @@ interface ExampleBot {
   description: string;
   content: string;
   botPlatforms: BotPlatform[];
+  botIcon: BotIconName;
+  botColor: BotColor;
   /** Placeholder: set to the Grok Bot template share URL once it exists on x.ai */
   installUrl: string | null;
   botConfig: Prisma.InputJsonObject;
@@ -29,6 +31,8 @@ export const EXAMPLE_BOTS: ExampleBot[] = [
 - Never post, like, repost or reply on the user's behalf.
 - Keep the whole briefing under 200 words.`,
     botPlatforms: ["GROK_BOT"],
+    botIcon: "newspaper",
+    botColor: "sky",
     installUrl: null,
     botConfig: {
       routines: [
@@ -64,6 +68,8 @@ export const EXAMPLE_BOTS: ExampleBot[] = [
 - Never close issues and never assign people.
 - Keep comments under 80 words and sign them as "triage bot".`,
     botPlatforms: ["OPENCLAW", "HERMES"],
+    botIcon: "bug",
+    botColor: "orange",
     installUrl: null,
     botConfig: {
       routines: [
@@ -101,6 +107,8 @@ export const EXAMPLE_BOTS: ExampleBot[] = [
 - For each paper give the title, authors, link and one plain-language takeaway.
 - Skip papers you have already sent in previous digests.`,
     botPlatforms: ["HERMES", "OPENCLAW"],
+    botIcon: "graduation-cap",
+    botColor: "violet",
     installUrl: null,
     botConfig: {
       routines: [

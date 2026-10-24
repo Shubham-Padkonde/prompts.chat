@@ -20,6 +20,8 @@ export async function GET(request: Request) {
         description: bot.description,
         platforms: bot.platforms,
         platformNames: bot.platforms.map((platform) => BOT_PLATFORM_INFO[platform].name),
+        icon: bot.icon,
+        color: bot.color,
         installUrl: bot.installUrl,
         author: bot.author.username,
         urls: getBotUrls(bot, baseUrl),

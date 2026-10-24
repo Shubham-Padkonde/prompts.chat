@@ -107,6 +107,8 @@ export async function GET(request: NextRequest) {
           type: true,
           botPlatform: true,
           botPlatforms: true,
+          botIcon: true,
+          botColor: true,
           isPrivate: true,
           isUnlisted: true,
           isFeatured: true,

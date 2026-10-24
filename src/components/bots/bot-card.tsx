@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Bot as BotIcon, Clock, Star, Zap } from "lucide-react";
+import { Clock, Star, Zap } from "lucide-react";
+import { BotAvatar } from "@/components/bots/bot-avatar";
 import { BotPlatformIcons } from "@/components/bots/bot-platform-icons";
 import type { BotView } from "@/lib/bots";
 import { getBotUrl } from "@/lib/urls";
@@ -20,9 +21,7 @@ export async function BotCard({ bot }: BotCardProps) {
       className="group flex flex-col gap-3 rounded-[var(--radius)] border bg-card p-4 transition-colors hover:border-foreground/30 hover:bg-accent/40"
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border bg-muted">
-          <BotIcon className="h-4 w-4 text-muted-foreground" />
-        </div>
+        <BotAvatar icon={bot.icon} color={bot.color} />
         <div className="flex flex-wrap items-center justify-end gap-1.5">
           {bot.isFeatured && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
           <BotPlatformIcons platforms={bot.platforms} />

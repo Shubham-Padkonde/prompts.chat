@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { BotAvatar } from "@/components/bots/bot-avatar";
 import { BotInstall } from "@/components/bots/bot-install";
 import { BotPlatformBadge } from "@/components/bots/bot-platform-badge";
 import { JsonLd, breadcrumbSchema } from "@/components/seo/structured-data";
@@ -87,7 +88,10 @@ export default async function BotPage({ params }: BotPageProps) {
           )}
           {bot.isUnlisted && <Badge variant="outline">{t("unlisted")}</Badge>}
         </div>
-        <h1 className="text-2xl font-semibold">{bot.title}</h1>
+        <div className="flex items-center gap-3">
+          <BotAvatar icon={bot.icon} color={bot.color} size="lg" />
+          <h1 className="text-2xl font-semibold">{bot.title}</h1>
+        </div>
         {bot.description && <p className="text-muted-foreground">{bot.description}</p>}
         <Link href={`/@${bot.author.username}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <Avatar className="h-5 w-5">

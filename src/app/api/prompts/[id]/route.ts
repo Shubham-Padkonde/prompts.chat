@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { generatePromptEmbedding, findAndSaveRelatedPrompts } from "@/lib/ai/embeddings";
 import { generatePromptSlug } from "@/lib/slug";
 import { checkPromptQuality } from "@/lib/ai/quality-check";
-import { BOT_PLATFORMS, botConfigSchema, botPlatformsData, botPlatformsSchema, installUrlSchema } from "@/lib/bots/schema";
+import { BOT_PLATFORMS, botColorSchema, botConfigSchema, botIconSchema, botPlatformsData, botPlatformsSchema, installUrlSchema } from "@/lib/bots/schema";
 
 const updatePromptSchema = z.object({
   title: z.string().min(1).max(200).optional(),
@@ -32,6 +32,8 @@ const updatePromptSchema = z.object({
   botPlatforms: botPlatformsSchema.optional(),
   /** Deprecated single-platform alias for botPlatforms */
   botPlatform: z.enum(BOT_PLATFORMS).optional(),
+  botIcon: botIconSchema.nullish().or(z.literal("")),
+  botColor: botColorSchema.nullish().or(z.literal("")),
   installUrl: installUrlSchema.optional().or(z.literal("")).nullable(),
   botConfig: botConfigSchema.optional(),
 });
@@ -166,7 +168,7 @@ export async function PATCH(
       );
     }
 
-    const { tagIds, contributorIds, categoryId, mediaUrl, title, bestWithModels, bestWithMCP, workflowLink, installUrl, botPlatforms, botPlatform, ...data } = parsed.data;
+    const { tagIds, contributorIds, categoryId, mediaUrl, title, bestWithModels, bestWithMCP, workflowLink, installUrl, botPlatforms, botPlatform, botIcon, botColor, ...data } = parsed.data;
     const nextBotPlatforms = botPlatforms ?? (botPlatform ? [botPlatform] : undefined);
 
     // Regenerate slug if title changed
@@ -187,6 +189,8 @@ export async function PATCH(
       ...(workflowLink !== undefined && { workflowLink: workflowLink || null }),
       ...(installUrl !== undefined && { installUrl: installUrl || null }),
       ...(nextBotPlatforms && botPlatformsData(nextBotPlatforms)),
+      ...(botIcon !== undefined && { botIcon: botIcon || null }),
+      ...(botColor !== undefined && { botColor: botColor || null }),
     };
 
     // Update prompt
