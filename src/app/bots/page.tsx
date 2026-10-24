@@ -52,38 +52,41 @@ export default async function BotsPage({ searchParams }: BotsPageProps) {
 
   return (
     <div className="container py-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div className="flex items-baseline gap-2">
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <div className="flex items-baseline gap-2 min-w-0">
           <h1 className="text-lg font-semibold">{tSeo("heading")}</h1>
           <span className="text-xs text-muted-foreground">{t("count", { count: total })}</span>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <div className="flex flex-wrap gap-1">
-            {filters.map((filter) => (
-              <Link
-                key={filter.label}
-                href={pageHref(filter.param, 1)}
-                className={cn(
-                  "px-3 py-1 rounded-md border text-xs transition-colors",
-                  platformParam === filter.param
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                )}
-              >
-                {filter.label}
-              </Link>
-            ))}
-          </div>
-          <Button size="sm" className="h-8 text-xs w-full sm:w-auto" asChild>
-            <Link href="/bots/new">
-              <Plus className="h-3.5 w-3.5 mr-1" />
-              {t("create")}
-            </Link>
-          </Button>
-        </div>
+        <Button size="sm" className="h-8 text-xs shrink-0" asChild>
+          <Link href="/bots/new">
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            {t("create")}
+          </Link>
+        </Button>
       </div>
 
-      <p className="text-sm text-muted-foreground mb-6">{t("description")}</p>
+      <p className="text-sm text-muted-foreground mb-4">{t("description")}</p>
+
+      <nav aria-label={t("form.platform")} className="flex flex-wrap items-center gap-2 mb-6">
+        {filters.map((filter) => {
+          const active = platformParam === filter.param;
+          return (
+            <Link
+              key={filter.label}
+              href={pageHref(filter.param, 1)}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium leading-none whitespace-nowrap rounded-full border transition-colors",
+                active
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background hover:bg-accent border-border"
+              )}
+            >
+              {filter.label}
+            </Link>
+          );
+        })}
+      </nav>
 
       {bots.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
