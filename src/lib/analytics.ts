@@ -241,6 +241,105 @@ export const analyticsPrompt = {
 };
 
 // ============================================================================
+// Bot Events
+// ============================================================================
+
+export const analyticsBot = {
+  view: (botId: string, botTitle?: string) => {
+    trackEvent({
+      action: "view_bot",
+      category: "bot",
+      label: botTitle,
+      bot_id: botId,
+    });
+  },
+
+  cardClick: (botId: string, position?: number) => {
+    trackEvent({
+      action: "click_bot_card",
+      category: "bot",
+      bot_id: botId,
+      position,
+    });
+  },
+
+  installClick: (botId: string, platform: string) => {
+    trackEvent({
+      action: "install_bot_click",
+      category: "bot",
+      label: platform,
+      bot_id: botId,
+      platform,
+    });
+  },
+
+  /** Outbound click to the Grok Bot template page (x.ai/bot) */
+  grokTemplateClick: (botId: string, url: string) => {
+    trackEvent({
+      action: "grok_template_click",
+      category: "bot",
+      label: url,
+      bot_id: botId,
+      outbound: true,
+      transport_type: "beacon",
+    });
+  },
+
+  copyInstall: (botId: string, platform: string, kind: "prompt" | "command") => {
+    trackEvent({
+      action: "copy_bot_install",
+      category: "bot",
+      label: kind,
+      bot_id: botId,
+      platform,
+    });
+  },
+
+  tabChange: (botId: string, platform: string) => {
+    trackEvent({
+      action: "bot_install_tab_change",
+      category: "bot",
+      label: platform,
+      bot_id: botId,
+      platform,
+    });
+  },
+
+  filter: (platform: string) => {
+    trackEvent({
+      action: "filter_bots",
+      category: "bot",
+      label: platform,
+      platform,
+    });
+  },
+
+  create: (platforms: string[]) => {
+    trackEvent({
+      action: "create_bot",
+      category: "bot",
+      label: platforms.join(","),
+    });
+  },
+
+  edit: (botId: string) => {
+    trackEvent({
+      action: "edit_bot",
+      category: "bot",
+      bot_id: botId,
+    });
+  },
+
+  delete: (botId: string) => {
+    trackEvent({
+      action: "delete_bot",
+      category: "bot",
+      bot_id: botId,
+    });
+  },
+};
+
+// ============================================================================
 // Search & Filter Events
 // ============================================================================
 

@@ -23,6 +23,7 @@ import {
 import { BotAvatar } from "@/components/bots/bot-avatar";
 import { BotPlatformBadge } from "@/components/bots/bot-platform-badge";
 import { resolveBotPlatforms, type BotPlatform } from "@/lib/bots/schema";
+import { analyticsBot } from "@/lib/analytics";
 import { getBotUrl } from "@/lib/urls";
 
 interface AdminBot {
@@ -94,8 +95,10 @@ export function BotsManagement() {
       if (!res.ok) throw new Error("Request failed");
       toast.success(successMessage);
       await fetchBots();
+      return true;
     } catch {
       toast.error(tCommon("somethingWentWrong"));
+      return false;
     } finally {
       setPendingId(null);
     }
@@ -103,7 +106,8 @@ export function BotsManagement() {
 
   const handleDelete = async () => {
     if (!botToDelete) return;
-    await runAction(botToDelete, `/api/admin/prompts/${botToDelete.id}`, { method: "DELETE" }, t("botsList.deleted"));
+    const deleted = await runAction(botToDelete, `/api/admin/prompts/${botToDelete.id}`, { method: "DELETE" }, t("botsList.deleted"));
+    if (deleted) analyticsBot.delete(botToDelete.id);
     setBotToDelete(null);
   };
 

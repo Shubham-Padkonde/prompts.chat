@@ -7,11 +7,12 @@ import { auth } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { BotViewTracker } from "@/components/bots/bot-analytics";
 import { BotAvatar } from "@/components/bots/bot-avatar";
 import { BotInstall } from "@/components/bots/bot-install";
 import { BotPlatformBadge } from "@/components/bots/bot-platform-badge";
-import { JsonLd, breadcrumbSchema } from "@/components/seo/structured-data";
-import { extractBotId, formatBotPlatforms, getBotById, getBotInstallOptions, getBotUrls } from "@/lib/bots";
+import { JsonLd, botSchema, breadcrumbSchema } from "@/components/seo/structured-data";
+import { BOT_PLATFORM_INFO, extractBotId, formatBotPlatforms, getBotById, getBotInstallOptions, getBotUrls } from "@/lib/bots";
 import { canViewPrompt } from "@/lib/prompt-access";
 import { buildPageMetadata, getBaseUrl, NOINDEX_ROBOTS, toMetaDescription } from "@/lib/seo";
 import { getBotUrl } from "@/lib/urls";
@@ -31,6 +32,7 @@ export async function generateMetadata({ params }: BotPageProps): Promise<Metada
     description: toMetaDescription(bot.description || bot.instructions),
     path: getBotUrl(bot.id, bot.slug),
     noindex: bot.isUnlisted,
+    image: "route",
   });
 }
 
@@ -52,14 +54,29 @@ export default async function BotPage({ params }: BotPageProps) {
   const baseUrl = getBaseUrl();
   const canEdit = session?.user?.id === bot.authorId || session?.user?.role === "ADMIN";
   const { routines, skills, connectors } = bot.config;
+  const platformNames = bot.platforms.map((platform) => BOT_PLATFORM_INFO[platform].name);
 
   return (
     <div className="container max-w-5xl py-6">
+      <BotViewTracker botId={bot.id} botTitle={bot.title} />
       <JsonLd
-        data={breadcrumbSchema([
-          { name: tNav("bots"), path: "/bots" },
-          { name: bot.title, path: canonicalPath },
-        ])}
+        data={[
+          ...botSchema({
+            path: canonicalPath,
+            name: bot.title,
+            description: toMetaDescription(bot.description || bot.instructions),
+            platforms: platformNames,
+            author: { name: bot.author.name || bot.author.username, username: bot.author.username },
+            keywords: [...platformNames, ...skills.map((skill) => skill.name), ...connectors],
+            features: routines.map((routine) => routine.name),
+            dateCreated: bot.createdAt,
+            dateModified: bot.updatedAt,
+          }),
+          breadcrumbSchema([
+            { name: tNav("bots"), path: "/bots" },
+            { name: bot.title, path: canonicalPath },
+          ]),
+        ]}
       />
 
       <div className="mb-4 flex items-center justify-between gap-2">
@@ -180,7 +197,7 @@ export default async function BotPage({ params }: BotPageProps) {
 
         <aside className="lg:sticky lg:top-16 h-fit rounded-md border p-4 space-y-3">
           <h2 className="text-base font-semibold">{t("install")}</h2>
-          <BotInstall options={getBotInstallOptions(bot, baseUrl)} urls={getBotUrls(bot, baseUrl)} />
+          <BotInstall botId={bot.id} options={getBotInstallOptions(bot, baseUrl)} urls={getBotUrls(bot, baseUrl)} />
         </aside>
       </div>
     </div>

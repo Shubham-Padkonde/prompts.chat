@@ -21,6 +21,8 @@ export default function robots(): MetadataRoute.Robots {
           "/prompts/new",
           "/prompts/*/edit",
           "/prompts/*/changes/new",
+          "/bots/new",
+          "/bots/*/edit",
         ],
       },
     ],

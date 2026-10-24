@@ -9,13 +9,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BotPlatformIcon } from "@/components/bots/bot-platform-icon";
 import type { BotInstallOption } from "@/lib/bots";
 import { BOT_PLATFORM_INFO } from "@/lib/bots/schema";
+import { analyticsBot } from "@/lib/analytics";
 
 interface BotInstallProps {
+  botId: string;
   options: BotInstallOption[];
   urls: { markdown: string; json: string; skill: string };
 }
 
-function CopyBlock({ text, label }: { text: string; label: string }) {
+function CopyBlock({ text, label, onCopy }: { text: string; label: string; onCopy?: () => void }) {
   const t = useTranslations("common");
   const [copied, setCopied] = useState(false);
 
@@ -23,6 +25,7 @@ function CopyBlock({ text, label }: { text: string; label: string }) {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
+      onCopy?.();
       toast.success(t("copied"));
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -43,7 +46,7 @@ function CopyBlock({ text, label }: { text: string; label: string }) {
   );
 }
 
-function PlatformInstall({ option }: { option: BotInstallOption }) {
+function PlatformInstall({ botId, option }: { botId: string; option: BotInstallOption }) {
   const t = useTranslations("bots");
   const { platform, platformName, installUrl, installPrompt, command } = option;
   const hasPrimaryAction = platform === "GROK_BOT" || !!command;
@@ -52,7 +55,15 @@ function PlatformInstall({ option }: { option: BotInstallOption }) {
     <div className="space-y-4">
       {installUrl ? (
         <Button asChild className="w-full">
-          <a href={installUrl} target="_blank" rel="noopener noreferrer">
+          <a
+            href={installUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              analyticsBot.installClick(botId, platform);
+              if (platform === "GROK_BOT") analyticsBot.grokTemplateClick(botId, installUrl);
+            }}
+          >
             <ExternalLink className="h-4 w-4" />
             {t("installOn", { platform: platformName })}
           </a>
@@ -70,7 +81,11 @@ function PlatformInstall({ option }: { option: BotInstallOption }) {
       {command && (
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">{t("hermesCommandHint")}</p>
-          <CopyBlock text={command} label={t("copyCommand")} />
+          <CopyBlock
+            text={command}
+            label={t("copyCommand")}
+            onCopy={() => analyticsBot.copyInstall(botId, platform, "command")}
+          />
         </div>
       )}
 
@@ -80,19 +95,27 @@ function PlatformInstall({ option }: { option: BotInstallOption }) {
             ? t("installPromptPlatformFallbackHint", { platform: platformName })
             : t("installPromptHint")}
         </p>
-        <CopyBlock text={installPrompt} label={t("copyInstallPrompt")} />
+        <CopyBlock
+          text={installPrompt}
+          label={t("copyInstallPrompt")}
+          onCopy={() => analyticsBot.copyInstall(botId, platform, "prompt")}
+        />
       </div>
     </div>
   );
 }
 
-export function BotInstall({ options, urls }: BotInstallProps) {
+export function BotInstall({ botId, options, urls }: BotInstallProps) {
   const t = useTranslations("bots");
 
   return (
     <div className="space-y-4">
       {options.length > 1 ? (
-        <Tabs defaultValue={options[0].platform} className="gap-4">
+        <Tabs
+          defaultValue={options[0].platform}
+          onValueChange={(platform) => analyticsBot.tabChange(botId, platform)}
+          className="gap-4"
+        >
           <TabsList aria-label={t("form.platforms")} className="w-full md:w-full">
             {options.map((option) => (
               <TabsTrigger
@@ -108,12 +131,12 @@ export function BotInstall({ options, urls }: BotInstallProps) {
           </TabsList>
           {options.map((option) => (
             <TabsContent key={option.platform} value={option.platform}>
-              <PlatformInstall option={option} />
+              <PlatformInstall botId={botId} option={option} />
             </TabsContent>
           ))}
         </Tabs>
       ) : (
-        options[0] && <PlatformInstall option={options[0]} />
+        options[0] && <PlatformInstall botId={botId} option={options[0]} />
       )}
 
       <div className="space-y-1 border-t pt-3">

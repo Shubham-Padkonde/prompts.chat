@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Clock, Star, Zap } from "lucide-react";
+import { BotCardLink } from "@/components/bots/bot-analytics";
 import { BotAvatar } from "@/components/bots/bot-avatar";
 import { BotPlatformIcons } from "@/components/bots/bot-platform-icons";
 import type { BotView } from "@/lib/bots";
@@ -8,15 +8,19 @@ import { getBotUrl } from "@/lib/urls";
 
 interface BotCardProps {
   bot: BotView;
+  /** 1-based position in the listing, reported with card clicks */
+  position?: number;
 }
 
-export async function BotCard({ bot }: BotCardProps) {
+export async function BotCard({ bot, position }: BotCardProps) {
   const t = await getTranslations("bots");
   const scheduled = bot.config.routines.filter((r) => r.type === "schedule").length;
   const events = bot.config.routines.length - scheduled;
 
   return (
-    <Link
+    <BotCardLink
+      botId={bot.id}
+      position={position}
       href={getBotUrl(bot.id, bot.slug)}
       className="group flex flex-col gap-3 rounded-[var(--radius)] border bg-card p-4 transition-colors hover:border-foreground/30 hover:bg-accent/40"
     >
@@ -46,6 +50,6 @@ export async function BotCard({ bot }: BotCardProps) {
           </span>
         )}
       </div>
-    </Link>
+    </BotCardLink>
   );
 }

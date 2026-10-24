@@ -1,11 +1,14 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { BotFilterLink } from "@/components/bots/bot-analytics";
 import { getTranslations } from "next-intl/server";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BotCard } from "@/components/bots/bot-card";
+import { JsonLd, collectionPageSchema } from "@/components/seo/structured-data";
 import { BOT_PLATFORMS, BOT_PLATFORM_INFO, listBots, platformFromParam } from "@/lib/bots";
 import { buildPageMetadata } from "@/lib/seo";
+import { getBotUrl } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 
 const PER_PAGE = 24;
@@ -23,6 +26,7 @@ export async function generateMetadata({ searchParams }: BotsPageProps): Promise
     path: "/bots",
     // Filtered and paginated views share the main canonical
     noindex: !!platform || !!page,
+    image: "route",
   });
 }
 
@@ -52,6 +56,14 @@ export default async function BotsPage({ searchParams }: BotsPageProps) {
 
   return (
     <div className="container py-6">
+      <JsonLd
+        data={collectionPageSchema({
+          name: tSeo("heading"),
+          description: tSeo("description"),
+          path: pageHref(platformParam, page),
+          items: bots.map((bot) => ({ name: bot.title, path: getBotUrl(bot.id, bot.slug) })),
+        })}
+      />
       <div className="flex items-center justify-between gap-4 mb-4">
         <div className="flex items-baseline gap-2 min-w-0">
           <h1 className="text-lg font-semibold">{tSeo("heading")}</h1>
@@ -71,8 +83,9 @@ export default async function BotsPage({ searchParams }: BotsPageProps) {
         {filters.map((filter) => {
           const active = platformParam === filter.param;
           return (
-            <Link
+            <BotFilterLink
               key={filter.label}
+              platform={filter.param ?? "all"}
               href={pageHref(filter.param, 1)}
               aria-current={active ? "page" : undefined}
               className={cn(
@@ -83,15 +96,15 @@ export default async function BotsPage({ searchParams }: BotsPageProps) {
               )}
             >
               {filter.label}
-            </Link>
+            </BotFilterLink>
           );
         })}
       </nav>
 
       {bots.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {bots.map((bot) => (
-            <BotCard key={bot.id} bot={bot} />
+          {bots.map((bot, index) => (
+            <BotCard key={bot.id} bot={bot} position={(page - 1) * PER_PAGE + index + 1} />
           ))}
         </div>
       ) : (

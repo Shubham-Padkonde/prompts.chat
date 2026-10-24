@@ -9,6 +9,7 @@ export const revalidate = 3600;
 
 // A single sitemap file may hold at most 50,000 URLs. Split this file with
 // `generateSitemaps` once the number of public prompts gets close to the cap.
+// Bots count against this budget too, and are listed before other prompts.
 const MAX_PROMPTS = 45000;
 
 // Listing pages with fewer prompts than this are thin and left out of the sitemap
@@ -55,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic pages - skip if database is unavailable (e.g., during build)
   try {
-    const [latestPrompt, categories, categoryUpdates, prompts, tags, authors] = await Promise.all([
+    const [latestPrompt, categories, categoryUpdates, prompts, bots, tags, authors] = await Promise.all([
       db.prompt.findFirst({
         where: visiblePromptFilter,
         orderBy: { updatedAt: "desc" },
@@ -69,8 +70,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         _max: { updatedAt: true },
       }),
       db.prompt.findMany({
-        where: visiblePromptFilter,
+        where: { ...visiblePromptFilter, type: { not: "BOT" } },
         select: { id: true, slug: true, type: true, mediaUrl: true, updatedAt: true },
+        orderBy: { updatedAt: "desc" },
+        take: MAX_PROMPTS,
+      }),
+      db.prompt.findMany({
+        where: { ...visiblePromptFilter, type: "BOT" },
+        select: { id: true, slug: true, updatedAt: true },
         orderBy: { updatedAt: "desc" },
         take: MAX_PROMPTS,
       }),
@@ -102,6 +109,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const staticPages: MetadataRoute.Sitemap = staticPaths.map((path) => ({
       url: `${baseUrl}${path}`,
       ...(latestUpdate && listingPaths.has(path) && { lastModified: latestUpdate }),
+      ...(path === "/bots" && bots[0] && { lastModified: bots[0].updatedAt }),
     }));
 
     const categoryStats = new Map(categoryUpdates.map((c) => [c.categoryId, c]));
@@ -112,10 +120,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: categoryStats.get(category.id)?._max.updatedAt ?? undefined,
       }));
 
-    const promptPages: MetadataRoute.Sitemap = prompts.map((prompt) => {
+    const botPages: MetadataRoute.Sitemap = bots.map((bot) => ({
+      url: `${baseUrl}${getBotUrl(bot.id, bot.slug)}`,
+      lastModified: bot.updatedAt,
+    }));
+
+    const promptPages: MetadataRoute.Sitemap = prompts.slice(0, MAX_PROMPTS - bots.length).map((prompt) => {
       const image = prompt.type === "IMAGE" && prompt.mediaUrl ? toSitemapImageUrl(prompt.mediaUrl) : null;
       return {
-        url: `${baseUrl}${prompt.type === "BOT" ? getBotUrl(prompt.id, prompt.slug) : getPromptUrl(prompt.id, prompt.slug)}`,
+        url: `${baseUrl}${getPromptUrl(prompt.id, prompt.slug)}`,
         lastModified: prompt.updatedAt,
         ...(image && { images: [image] }),
       };
@@ -134,7 +147,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: authorUpdates.get(user.id) ?? undefined,
     }));
 
-    return [...staticPages, ...bookPages, ...categoryPages, ...tagPages, ...promptPages, ...profilePages];
+    return [...staticPages, ...bookPages, ...categoryPages, ...tagPages, ...botPages, ...promptPages, ...profilePages];
   } catch {
     // Database unavailable (build time) - return static and book pages only
     const staticPages: MetadataRoute.Sitemap = staticPaths.map((path) => ({ url: `${baseUrl}${path}` }));
