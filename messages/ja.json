@@ -831,7 +831,8 @@
     "bots": "ボット",
     "noBots": "まだボットはありません。",
     "noBotsOwner": "まだボットを作成していません。",
-    "createFirstBot": "最初のボットを作成"
+    "createFirstBot": "最初のボットを作成",
+    "botsCount": "ボット"
   },
   "subscription": {
     "subscribe": "購読",

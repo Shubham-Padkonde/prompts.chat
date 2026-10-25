@@ -124,14 +124,16 @@ export async function listBots({
 }
 
 /** A user's bots for their profile; private ones only for the owner */
-export async function listBotsByAuthor(authorId: string, { includePrivate = false } = {}): Promise<BotView[]> {
-  const records = await db.prompt.findMany({
-    where: { authorId, type: "BOT", deletedAt: null, ...(includePrivate ? {} : { isPrivate: false }) },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-    select: botSelect,
-  });
-  return records.map(toBotView);
+export async function listBotsByAuthor(
+  authorId: string,
+  { includePrivate = false, skip = 0, take = 24 }: { includePrivate?: boolean; skip?: number; take?: number } = {}
+): Promise<{ bots: BotView[]; total: number }> {
+  const where: Prisma.PromptWhereInput = { authorId, type: "BOT", deletedAt: null, ...(includePrivate ? {} : { isPrivate: false }) };
+  const [records, total] = await Promise.all([
+    db.prompt.findMany({ where, orderBy: { createdAt: "desc" }, skip, take, select: botSelect }),
+    db.prompt.count({ where }),
+  ]);
+  return { bots: records.map(toBotView), total };
 }
 
 /** Most recently added public bots, newest first */

@@ -831,7 +831,8 @@
     "bots": "Боты",
     "noBots": "Пока нет ботов.",
     "noBotsOwner": "Вы ещё не создали ни одного бота.",
-    "createFirstBot": "Создайте своего первого бота"
+    "createFirstBot": "Создайте своего первого бота",
+    "botsCount": "ботов"
   },
   "subscription": {
     "subscribe": "Подписаться",

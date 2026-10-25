@@ -831,7 +831,8 @@
     "bots": "البوتات",
     "noBots": "لا توجد بوتات بعد.",
     "noBotsOwner": "لم تنشئ أي بوتات بعد.",
-    "createFirstBot": "أنشئ أول بوت لك"
+    "createFirstBot": "أنشئ أول بوت لك",
+    "botsCount": "بوتات"
   },
   "subscription": {
     "subscribe": "اشتراك",

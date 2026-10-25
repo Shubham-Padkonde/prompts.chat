@@ -831,7 +831,8 @@
     "bots": "봇",
     "noBots": "아직 봇이 없습니다.",
     "noBotsOwner": "아직 만든 봇이 없습니다.",
-    "createFirstBot": "첫 번째 봇 만들기"
+    "createFirstBot": "첫 번째 봇 만들기",
+    "botsCount": "봇"
   },
   "subscription": {
     "subscribe": "구독",

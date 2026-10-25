@@ -831,7 +831,8 @@
     "bots": "机器人",
     "noBots": "暂无机器人。",
     "noBotsOwner": "你还没有创建任何机器人。",
-    "createFirstBot": "创建你的第一个机器人"
+    "createFirstBot": "创建你的第一个机器人",
+    "botsCount": "个机器人"
   },
   "subscription": {
     "subscribe": "订阅",

@@ -831,7 +831,8 @@
     "bots": "بات‌ها",
     "noBots": "هنوز باتی وجود ندارد.",
     "noBotsOwner": "هنوز هیچ باتی نساخته‌اید.",
-    "createFirstBot": "اولین بات خود را بسازید"
+    "createFirstBot": "اولین بات خود را بسازید",
+    "botsCount": "بات"
   },
   "subscription": {
     "subscribe": "دنبال کردن",

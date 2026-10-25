@@ -831,7 +831,8 @@
     "bots": "Bots",
     "noBots": "Ainda não há bots.",
     "noBotsOwner": "Você ainda não criou nenhum bot.",
-    "createFirstBot": "Crie seu primeiro bot"
+    "createFirstBot": "Crie seu primeiro bot",
+    "botsCount": "bots"
   },
   "subscription": {
     "subscribe": "Inscrever-se",

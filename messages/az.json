@@ -831,7 +831,8 @@
     "bots": "Botlar",
     "noBots": "Hələ bot yoxdur.",
     "noBotsOwner": "Siz hələ heç bir bot yaratmamısınız.",
-    "createFirstBot": "İlk botunuzu yaradın"
+    "createFirstBot": "İlk botunuzu yaradın",
+    "botsCount": "bot"
   },
   "subscription": {
     "subscribe": "Abunə ol",

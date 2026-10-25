@@ -831,7 +831,8 @@
     "bots": "בוטים",
     "noBots": "אין עדיין בוטים.",
     "noBotsOwner": "עדיין לא יצרת בוטים.",
-    "createFirstBot": "צור את הבוט הראשון שלך"
+    "createFirstBot": "צור את הבוט הראשון שלך",
+    "botsCount": "בוטים"
   },
   "subscription": {
     "subscribe": "הירשם",

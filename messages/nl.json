@@ -831,7 +831,8 @@
     "bots": "Bots",
     "noBots": "Nog geen bots.",
     "noBotsOwner": "Je hebt nog geen bots gemaakt.",
-    "createFirstBot": "Maak je eerste bot"
+    "createFirstBot": "Maak je eerste bot",
+    "botsCount": "bots"
   },
   "subscription": {
     "subscribe": "Abonneren",
