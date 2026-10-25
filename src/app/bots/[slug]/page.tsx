@@ -61,7 +61,7 @@ export default async function BotPage({ params }: BotPageProps) {
   const { routines, skills, connectors } = bot.config;
 
   return (
-    <div className="container max-w-5xl py-6">
+    <div className="container max-w-5xl py-6 min-w-0">
       <JsonLd
         data={breadcrumbSchema([
           { name: tNav("bots"), path: "/bots" },
@@ -88,7 +88,7 @@ export default async function BotPage({ params }: BotPageProps) {
         <DelistBanner promptId={bot.id} delistReason={bot.delistReason} isOwner={isOwner} isDeleted={!!bot.deletedAt} />
       )}
 
-      <div className="mb-4 flex items-center justify-between gap-2">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <Link href="/bots" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
           {t("backToBots")}
@@ -115,11 +115,11 @@ export default async function BotPage({ params }: BotPageProps) {
           {bot.isUnlisted && <Badge variant="outline">{t("unlisted")}</Badge>}
         </div>
         <div className="flex items-center gap-3">
-          <BotAvatar icon={bot.icon} color={bot.color} size="lg" />
-          <h1 className="text-2xl font-semibold">{bot.title}</h1>
+          <BotAvatar icon={bot.icon} color={bot.color} size="lg" className="h-12 w-12 sm:h-14 sm:w-14" />
+          <h1 className="min-w-0 flex-1 text-xl sm:text-2xl font-semibold wrap-anywhere">{bot.title}</h1>
         </div>
-        {bot.description && <p className="text-muted-foreground">{bot.description}</p>}
-        <Link href={`/@${bot.author.username}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+        {bot.description && <p className="text-muted-foreground wrap-anywhere">{bot.description}</p>}
+        <Link href={`/@${bot.author.username}`} className="inline-flex max-w-full items-center gap-2 text-sm text-muted-foreground hover:text-foreground wrap-anywhere">
           <Avatar className="h-5 w-5">
             <AvatarImage src={bot.author.avatar || undefined} alt={bot.author.username} />
             <AvatarFallback className="text-[10px]">{(bot.author.name || bot.author.username).charAt(0).toUpperCase()}</AvatarFallback>
@@ -128,11 +128,11 @@ export default async function BotPage({ params }: BotPageProps) {
         </Link>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-8 min-w-0">
           <section className="space-y-2">
             <h2 className="text-base font-semibold">{t("instructions")}</h2>
-            <pre className="whitespace-pre-wrap break-words rounded-md border bg-muted/50 p-4 text-sm font-mono leading-relaxed">
+            <pre className="overflow-x-auto whitespace-pre-wrap wrap-anywhere rounded-md border bg-muted/50 p-3 sm:p-4 text-xs sm:text-sm font-mono leading-relaxed">
               {bot.instructions}
             </pre>
           </section>
@@ -142,22 +142,22 @@ export default async function BotPage({ params }: BotPageProps) {
             {routines.length > 0 ? (
               <div className="space-y-3">
                 {routines.map((routine, index) => (
-                  <div key={index} className="rounded-md border p-4 space-y-2">
+                  <div key={index} className="min-w-0 rounded-md border p-3 sm:p-4 space-y-2">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h3 className="font-medium">{routine.name}</h3>
+                      <h3 className="min-w-0 font-medium wrap-anywhere">{routine.name}</h3>
                       <Badge variant="outline" className="gap-1">
                         {routine.type === "schedule" ? <Clock /> : <Zap />}
                         {routine.type === "schedule" ? t("scheduled") : t("eventTriggered")}
                       </Badge>
                     </div>
-                    <p className="text-sm">
+                    <p className="text-sm wrap-anywhere">
                       <span className="text-muted-foreground">{routine.type === "schedule" ? t("schedule") : t("trigger")}: </span>
                       {routine.triggerLabel || routine.trigger}
                       {routine.type === "schedule" && routine.triggerLabel && (
-                        <code className="ml-2 rounded bg-muted px-1.5 py-0.5 text-xs">{routine.trigger}</code>
+                        <code className="ml-2 inline-block rounded bg-muted px-1.5 py-0.5 text-xs">{routine.trigger}</code>
                       )}
                     </p>
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{routine.prompt}</p>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap wrap-anywhere">{routine.prompt}</p>
                   </div>
                 ))}
               </div>
@@ -167,20 +167,20 @@ export default async function BotPage({ params }: BotPageProps) {
           </section>
 
           {(skills.length > 0 || connectors.length > 0) && (
-            <section className="grid gap-6 sm:grid-cols-2">
+            <section className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {skills.length > 0 && (
-                <div className="space-y-2">
+                <div className="min-w-0 space-y-2">
                   <h2 className="flex items-center gap-2 text-base font-semibold">
                     <Sparkles className="h-4 w-4" />
                     {t("skills")}
                   </h2>
                   <ul className="space-y-2">
                     {skills.map((skill, index) => (
-                      <li key={index} className="text-sm">
+                      <li key={index} className="text-sm wrap-anywhere">
                         <span className="font-medium">{skill.name}</span>
                         {skill.description && <span className="text-muted-foreground"> — {skill.description}</span>}
                         {skill.source && (
-                          <code className="mt-1 block w-fit rounded bg-muted px-1.5 py-0.5 text-xs">{skill.source}</code>
+                          <code className="mt-1 block w-fit max-w-full overflow-x-auto whitespace-nowrap rounded bg-muted px-1.5 py-0.5 text-xs">{skill.source}</code>
                         )}
                       </li>
                     ))}
@@ -188,14 +188,14 @@ export default async function BotPage({ params }: BotPageProps) {
                 </div>
               )}
               {connectors.length > 0 && (
-                <div className="space-y-2">
+                <div className="min-w-0 space-y-2">
                   <h2 className="flex items-center gap-2 text-base font-semibold">
                     <Plug className="h-4 w-4" />
                     {t("connectors")}
                   </h2>
                   <div className="flex flex-wrap gap-1">
                     {connectors.map((connector) => (
-                      <Badge key={connector} variant="outline">{connector}</Badge>
+                      <Badge key={connector} variant="outline" className="max-w-full whitespace-normal wrap-anywhere">{connector}</Badge>
                     ))}
                   </div>
                 </div>
@@ -204,7 +204,7 @@ export default async function BotPage({ params }: BotPageProps) {
           )}
         </div>
 
-        <aside className="lg:sticky lg:top-16 h-fit rounded-md border p-4 space-y-3">
+        <aside className="min-w-0 lg:sticky lg:top-16 h-fit rounded-md border p-3 sm:p-4 space-y-3">
           <h2 className="text-base font-semibold">{t("install")}</h2>
           <BotInstall options={getBotInstallOptions(bot, baseUrl)} urls={getBotUrls(bot, baseUrl)} />
         </aside>

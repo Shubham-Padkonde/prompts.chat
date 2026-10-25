@@ -9,13 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BotPlatformIcon } from "@/components/bots/bot-platform-icon";
 import type { BotInstallOption } from "@/lib/bots";
 import { BOT_PLATFORM_INFO } from "@/lib/bots/schema";
+import { cn } from "@/lib/utils";
 
 interface BotInstallProps {
   options: BotInstallOption[];
   urls: { markdown: string; json: string; skill: string };
 }
 
-function CopyBlock({ text, label }: { text: string; label: string }) {
+function CopyBlock({ text, label, code = false }: { text: string; label: string; code?: boolean }) {
   const t = useTranslations("common");
   const [copied, setCopied] = useState(false);
 
@@ -31,8 +32,13 @@ function CopyBlock({ text, label }: { text: string; label: string }) {
   };
 
   return (
-    <div className="space-y-2">
-      <pre className="whitespace-pre-wrap break-words rounded-md border bg-muted/50 p-3 text-xs font-mono leading-relaxed">
+    <div className="min-w-0 space-y-2">
+      <pre
+        className={cn(
+          "max-w-full overflow-x-auto rounded-md border bg-muted/50 p-3 text-xs font-mono leading-relaxed",
+          code ? "whitespace-pre" : "whitespace-pre-wrap wrap-anywhere"
+        )}
+      >
         {text}
       </pre>
       <Button size="sm" variant="outline" className="w-full" onClick={copy}>
@@ -49,7 +55,7 @@ function PlatformInstall({ option }: { option: BotInstallOption }) {
   const hasPrimaryAction = platform === "GROK_BOT" || !!command;
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       {installUrl ? (
         <Button asChild className="w-full">
           <a href={installUrl} target="_blank" rel="noopener noreferrer">
@@ -70,7 +76,7 @@ function PlatformInstall({ option }: { option: BotInstallOption }) {
       {command && (
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">{t("hermesCommandHint")}</p>
-          <CopyBlock text={command} label={t("copyCommand")} />
+          <CopyBlock text={command} label={t("copyCommand")} code />
         </div>
       )}
 
@@ -90,7 +96,7 @@ export function BotInstall({ options, urls }: BotInstallProps) {
   const t = useTranslations("bots");
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       {options.length > 1 ? (
         <Tabs defaultValue={options[0].platform} className="gap-4">
           <TabsList aria-label={t("form.platforms")} className="w-full md:w-full">
@@ -107,7 +113,7 @@ export function BotInstall({ options, urls }: BotInstallProps) {
             ))}
           </TabsList>
           {options.map((option) => (
-            <TabsContent key={option.platform} value={option.platform}>
+            <TabsContent key={option.platform} value={option.platform} className="min-w-0">
               <PlatformInstall option={option} />
             </TabsContent>
           ))}

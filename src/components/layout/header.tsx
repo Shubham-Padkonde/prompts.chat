@@ -144,7 +144,7 @@ export function Header({ authProvider = "credentials", allowRegistration = true 
 
   return (
     <header className="sticky top-[0px] z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className={`flex h-12 items-center gap-4 ${pathname === "/developers" ? "px-4" : "container"}`}>
+      <div className={`flex h-12 items-center gap-2 sm:gap-4 ${pathname === "/developers" ? "px-4" : "container"}`}>
         {/* Mobile menu */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild className="md:hidden">
@@ -498,7 +498,7 @@ export function Header({ authProvider = "credentials", allowRegistration = true 
         <div className="flex-1" />
 
         {/* Right side actions */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1">
           {/* Book link */}
           {!branding.useCloneBranding && (
             <Button asChild variant="ghost" size="sm" className="hidden 2xl:flex h-8 gap-1.5">
@@ -547,7 +547,7 @@ export function Header({ authProvider = "credentials", allowRegistration = true 
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              className="hidden sm:flex h-8 w-8"
               asChild
             >
               <a

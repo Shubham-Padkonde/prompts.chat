@@ -72,7 +72,7 @@ export function BotCard({ bot }: BotCardProps) {
     <Link
       href={getBotUrl(bot.id, bot.slug)}
       prefetch={false}
-      className="group flex flex-col gap-3 rounded-[var(--radius)] border bg-card p-4 transition-colors hover:border-foreground/30 hover:bg-accent/40"
+      className="group flex min-w-0 flex-col gap-3 rounded-[var(--radius)] border bg-card p-4 transition-colors hover:border-foreground/30 hover:bg-accent/40"
     >
       <div className="flex items-start justify-between gap-2">
         <BotAvatar icon={bot.icon} color={bot.color} />
@@ -82,11 +82,11 @@ export function BotCard({ bot }: BotCardProps) {
         </div>
       </div>
       <div className="space-y-1">
-        <h2 className="font-semibold leading-snug group-hover:underline">{bot.title}</h2>
-        {bot.description && <p className="text-sm text-muted-foreground line-clamp-3">{bot.description}</p>}
+        <h2 className="font-semibold leading-snug wrap-anywhere group-hover:underline">{bot.title}</h2>
+        {bot.description && <p className="text-sm text-muted-foreground line-clamp-3 wrap-anywhere">{bot.description}</p>}
       </div>
       <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-        <span>@{bot.author.username}</span>
+        <span className="min-w-0 wrap-anywhere">@{bot.author.username}</span>
         {scheduled > 0 && (
           <span className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
