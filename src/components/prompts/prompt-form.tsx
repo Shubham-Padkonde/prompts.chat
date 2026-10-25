@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Upload, X, ArrowDown, Image as ImageIcon, Video, Volume2, Paperclip, Search, Sparkles, BookOpen, ExternalLink, ChevronDown, Settings2 } from "lucide-react";
+import { Loader2, Upload, X, ArrowDown, Image as ImageIcon, Video, Volume2, Paperclip, Sparkles, BookOpen, ExternalLink, ChevronDown, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { VariableToolbar } from "./variable-toolbar";
 import { VariableWarning } from "./variable-warning";
@@ -49,6 +49,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { CategorySelect, type CategoryOption } from "@/components/prompts/category-select";
+import { TagPicker, type TagOption } from "@/components/prompts/tag-picker";
 import { CodeEditor, type CodeEditorHandle } from "@/components/ui/code-editor";
 import { toast } from "sonner";
 import { prettifyJson } from "@/lib/format";
@@ -382,18 +384,8 @@ interface Contributor {
 }
 
 interface PromptFormProps {
-  categories: Array<{
-    id: string;
-    name: string;
-    slug: string;
-    parentId: string | null;
-  }>;
-  tags: Array<{
-    id: string;
-    name: string;
-    slug: string;
-    color: string;
-  }>;
+  categories: CategoryOption[];
+  tags: TagOption[];
   initialData?: Partial<PromptFormValues>;
   initialContributors?: Contributor[];
   promptId?: string;
@@ -465,13 +457,9 @@ export function PromptForm({ categories, tags, initialData, initialContributors 
   const bestWithModels = form.watch("bestWithModels") || [];
   const modelsByProvider = getModelsByProvider();
 
-  const selectedTags = form.watch("tagIds");
   const promptType = form.watch("type");
   const structuredFormat = form.watch("structuredFormat");
   const isStructuredInput = !!structuredFormat;
-  const [tagSearch, setTagSearch] = useState("");
-  const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
-  const tagInputRef = useRef<HTMLInputElement>(null);
   const requiresMediaUpload = form.watch("requiresMediaUpload");
   const promptContent = form.watch("content");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -672,15 +660,6 @@ export function PromptForm({ categories, tags, initialData, initialContributors 
     }
   }
 
-  const toggleTag = (tagId: string) => {
-    const current = form.getValues("tagIds");
-    if (current.includes(tagId)) {
-      form.setValue("tagIds", current.filter((id) => id !== tagId));
-    } else {
-      form.setValue("tagIds", [...current, tagId]);
-    }
-  };
-
   const handleAiGenerate = (field: string, label: string) => {
     if (usedAiButtons.has(field) || !builderRef.current) return;
     setUsedAiButtons(prev => new Set(prev).add(field));
@@ -784,35 +763,7 @@ export function PromptForm({ categories, tags, initialData, initialContributors 
                     {t("promptCategory")}
                     <AiGenerateButton field="category" label="Category" />
                   </FormLabel>
-                  <Select 
-                    onValueChange={(value) => field.onChange(value === "__none__" ? undefined : value)} 
-                    value={field.value || "__none__"}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder={t("selectCategory")} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="__none__">{t("noCategory")}</SelectItem>
-                      {categories
-                        .filter((c) => c.id && !c.parentId)
-                        .map((parent) => (
-                          <div key={parent.id}>
-                            <SelectItem value={parent.id} className="font-medium">
-                              {parent.name}
-                            </SelectItem>
-                            {categories
-                              .filter((c) => c.parentId === parent.id)
-                              .map((child) => (
-                                <SelectItem key={child.id} value={child.id} className="pl-6 text-muted-foreground">
-                                  ↳ {child.name}
-                                </SelectItem>
-                              ))}
-                          </div>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                  <CategorySelect categories={categories} value={field.value} onChange={field.onChange} />
                   <FormMessage />
                 </FormItem>
               )}
@@ -846,99 +797,16 @@ export function PromptForm({ categories, tags, initialData, initialContributors 
           <FormField
             control={form.control}
             name="tagIds"
-            render={() => {
-              const filteredTags = tags.filter(
-                (tag) =>
-                  !selectedTags.includes(tag.id) &&
-                  tag.name.toLowerCase().includes(tagSearch.toLowerCase())
-              );
-              const selectedTagObjects = tags.filter((tag) => selectedTags.includes(tag.id));
-
-              return (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-1.5">
-                    {t("promptTags")}
-                    <AiGenerateButton field="tags" label="Tags" />
-                  </FormLabel>
-                  {/* Selected tags */}
-                  {selectedTagObjects.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {selectedTagObjects.map((tag) => (
-                        <Badge
-                          key={tag.id}
-                          style={{ backgroundColor: tag.color, color: "white" }}
-                          className="pr-1 flex items-center gap-1"
-                        >
-                          {tag.name}
-                          <button
-                            type="button"
-                            onClick={() => toggleTag(tag.id)}
-                            className="ml-1 rounded-full hover:bg-white/20 p-0.5"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                  {/* Search input */}
-                  <div className="relative">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        ref={tagInputRef}
-                        type="text"
-                        placeholder={t("searchTags")}
-                        value={tagSearch}
-                        onChange={(e) => {
-                          setTagSearch(e.target.value);
-                          setTagDropdownOpen(true);
-                        }}
-                        onFocus={() => setTagDropdownOpen(true)}
-                        onBlur={() => setTimeout(() => setTagDropdownOpen(false), 150)}
-                        className="pl-9"
-                        autoComplete="off"
-                        autoCorrect="off"
-                        autoCapitalize="none"
-                        spellCheck={false}
-                        data-1p-ignore
-                        data-lpignore="true"
-                        data-form-type="other"
-                      />
-                    </div>
-                    {/* Dropdown suggestions */}
-                    {tagDropdownOpen && filteredTags.length > 0 && (
-                      <div className="absolute z-10 w-full mt-1 bg-popover border rounded-md shadow-md max-h-48 overflow-auto">
-                        {filteredTags.map((tag) => (
-                          <button
-                            key={tag.id}
-                            type="button"
-                            onClick={() => {
-                              toggleTag(tag.id);
-                              setTagSearch("");
-                              tagInputRef.current?.focus();
-                            }}
-                            className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
-                          >
-                            <span
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: tag.color }}
-                            />
-                            {tag.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                    {tagDropdownOpen && tagSearch && filteredTags.length === 0 && (
-                      <div className="absolute z-10 w-full mt-1 bg-popover border rounded-md shadow-md p-3 text-sm text-muted-foreground">
-                        {t("noTagsFound")}
-                      </div>
-                    )}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-1.5">
+                  {t("promptTags")}
+                  <AiGenerateButton field="tags" label="Tags" />
+                </FormLabel>
+                <TagPicker tags={tags} value={field.value} onChange={(value) => form.setValue("tagIds", value)} />
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
           {/* Contributors */}
