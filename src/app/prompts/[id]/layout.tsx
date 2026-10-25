@@ -51,10 +51,11 @@ export default async function PromptLayout({ children, params }: PromptLayoutPro
   const headersList = await headers();
   const pathname = headersList.get("x-pathname") ?? "";
 
-  // Bots have their own pages, including the editor
+  // Bots have their own pages, including the editor and change requests
   if (prompt.type === "BOT") {
     const botPath = getBotUrl(id, prompt.slug);
-    permanentRedirect(pathname.endsWith("/edit") ? `${botPath}/edit` : botPath);
+    const nested = pathname.match(/^\/prompts\/[^/]+(\/(?:edit|changes(?:\/[^/]+)?))\/?$/)?.[1] ?? "";
+    permanentRedirect(`${botPath}${nested}`);
   }
 
   // Serve every prompt from a single URL: /prompts/{id} and outdated slugs

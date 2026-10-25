@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { formatDistanceToNow } from "@/lib/date";
-import { Clock, Edit, History, GitPullRequest, Check, X, Users, ImageIcon, Video, FileText, Shield, Trash2, Cpu, Terminal, Wrench } from "lucide-react";
+import { Edit, History, GitPullRequest, Users, ImageIcon, Video, FileText, Shield, Trash2, Cpu, Terminal, Wrench } from "lucide-react";
 import { AnimatedDate } from "@/components/ui/animated-date";
 import { ShareDropdown } from "@/components/prompts/share-dropdown";
 import { auth } from "@/lib/auth";
@@ -29,6 +29,7 @@ import { RestorePromptButton } from "@/components/prompts/restore-prompt-button"
 import { CommentSection } from "@/components/comments";
 import { PromptFlowSection } from "@/components/prompts/prompt-flow-section";
 import { RelatedPrompts } from "@/components/prompts/related-prompts";
+import { ChangeRequestList } from "@/components/prompts/change-request-list";
 import { AddToCollectionButton } from "@/components/prompts/add-to-collection-button";
 import { getConfig } from "@/lib/config";
 import { JsonLd, breadcrumbSchema, promptHowToSchema, promptSchema } from "@/components/seo/structured-data";
@@ -312,19 +313,6 @@ export default async function PromptPage({ params }: PromptPageProps) {
   });
 
   const pendingCount = changeRequests.filter((cr) => cr.status === "PENDING").length;
-  const tChanges = await getTranslations("changeRequests");
-
-  const statusColors = {
-    PENDING: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20",
-    APPROVED: "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20",
-    REJECTED: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
-  };
-
-  const statusIcons = {
-    PENDING: Clock,
-    APPROVED: Check,
-    REJECTED: X,
-  };
 
   // Get delist reason (cast to expected type after Prisma migration)
   const delistReason = (prompt as { delistReason?: string | null }).delistReason as
@@ -859,66 +847,7 @@ export default async function PromptPage({ params }: PromptPageProps) {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-base font-semibold">{t("changeRequests")}</h2>
               </div>
-              <div className="divide-y border rounded-lg">
-                {changeRequests.map((cr) => {
-                  const StatusIcon = statusIcons[cr.status];
-                  const hasTitleChange = cr.proposedTitle && cr.proposedTitle !== cr.originalTitle;
-                  return (
-                    <Link 
-                      key={cr.id} 
-                      href={`/prompts/${id}/changes/${cr.id}`}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-accent/50 transition-colors first:rounded-t-lg last:rounded-b-lg"
-                    >
-                      <div className={`p-1.5 rounded-full shrink-0 ${
-                        cr.status === "PENDING" 
-                          ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400" 
-                          : cr.status === "APPROVED"
-                          ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                          : "bg-red-500/10 text-red-600 dark:text-red-400"
-                      }`}>
-                        <StatusIcon className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium truncate">
-                            {hasTitleChange ? (
-                              <>
-                                <span className="line-through text-muted-foreground">{cr.originalTitle}</span>
-                                {" → "}
-                                <span>{cr.proposedTitle}</span>
-                              </>
-                            ) : (
-                              tChanges("contentChanges")
-                            )}
-                          </span>
-                        </div>
-                        {cr.reason && (
-                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                            {cr.reason}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3 shrink-0">
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Avatar className="h-5 w-5">
-                            <AvatarImage src={cr.author.avatar || undefined} />
-                            <AvatarFallback className="text-[9px]">
-                              {cr.author.name?.[0] || cr.author.username[0]}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="hidden sm:inline">@{cr.author.username}</span>
-                        </div>
-                        <span className="text-xs text-muted-foreground hidden sm:inline">
-                          {formatDistanceToNow(cr.createdAt, locale)}
-                        </span>
-                        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[cr.status]}`}>
-                          {tChanges(cr.status.toLowerCase())}
-                        </Badge>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
+              <ChangeRequestList changeRequests={changeRequests} basePath={`/prompts/${id}`} />
             </div>
           </TabsContent>
         )}

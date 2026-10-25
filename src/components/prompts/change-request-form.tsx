@@ -23,9 +23,11 @@ interface ChangeRequestFormProps {
   currentTitle: string;
   promptType?: string;
   structuredFormat?: string | null;
+  /** Page the request belongs to; defaults to the prompt page */
+  basePath?: string;
 }
 
-export function ChangeRequestForm({ promptId, currentContent, currentTitle, promptType, structuredFormat }: ChangeRequestFormProps) {
+export function ChangeRequestForm({ promptId, currentContent, currentTitle, promptType, structuredFormat, basePath }: ChangeRequestFormProps) {
   const isStructured = promptType === "STRUCTURED";
   const isSkill = promptType === "SKILL";
   const router = useRouter();
@@ -85,7 +87,7 @@ export function ChangeRequestForm({ promptId, currentContent, currentTitle, prom
       const result = await response.json();
       analyticsPrompt.changeRequest(promptId, "create");
       toast.success(t("created"));
-      router.push(`/prompts/${promptId}/changes/${result.id}`);
+      router.push(`${basePath ?? `/prompts/${promptId}`}/changes/${result.id}`);
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : tCommon("somethingWentWrong"));

@@ -22,9 +22,11 @@ import { analyticsPrompt } from "@/lib/analytics";
 interface DismissChangeRequestButtonProps {
   changeRequestId: string;
   promptId: string;
+  /** Where to go after dismissing; defaults to the prompt page */
+  redirectTo?: string;
 }
 
-export function DismissChangeRequestButton({ changeRequestId, promptId }: DismissChangeRequestButtonProps) {
+export function DismissChangeRequestButton({ changeRequestId, promptId, redirectTo }: DismissChangeRequestButtonProps) {
   const router = useRouter();
   const t = useTranslations("changeRequests");
   const tCommon = useTranslations("common");
@@ -46,7 +48,7 @@ export function DismissChangeRequestButton({ changeRequestId, promptId }: Dismis
 
       analyticsPrompt.changeRequest(promptId, "dismiss");
       toast.success(t("dismissed"));
-      router.push(`/prompts/${promptId}`);
+      router.push(redirectTo ?? `/prompts/${promptId}`);
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : tCommon("error"));
