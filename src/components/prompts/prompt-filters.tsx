@@ -22,12 +22,22 @@ import DeepWikiIcon from "@/../public/deepwiki.svg";
 import config from "@/../prompts.config";
 import { analyticsSearch } from "@/lib/analytics";
 
+/** The first select of the sidebar: prompt type on /prompts, platform on /bots */
+export interface PrimaryFilter {
+  param: string;
+  label: string;
+  options: Array<{ value: string; label: string }>;
+  onSelect?: (value: string) => void;
+}
+
 interface PromptFiltersProps {
   categories: Array<{
     id: string;
     name: string;
     slug: string;
     parentId: string | null;
+    /** Shown next to the name when provided */
+    count?: number;
   }>;
   tags: Array<{
     id: string;
@@ -37,21 +47,32 @@ interface PromptFiltersProps {
   }>;
   currentFilters: {
     q?: string;
-    type?: string;
     category?: string;
     tag?: string;
     sort?: string;
     ai?: string;
-  };
+  } & Record<string, string | undefined>;
   aiSearchEnabled?: boolean;
+  basePath?: string;
+  primaryFilter?: PrimaryFilter;
+  searchPlaceholder?: string;
 }
 
 const promptTypes = ["TEXT", "STRUCTURED", "IMAGE", "VIDEO", "AUDIO"];
 
-export function PromptFilters({ categories, tags, currentFilters, aiSearchEnabled }: PromptFiltersProps) {
+export function PromptFilters({ categories, tags, currentFilters, aiSearchEnabled, basePath = "/prompts", primaryFilter, searchPlaceholder }: PromptFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations();
+  const primary: PrimaryFilter = primaryFilter ?? {
+    param: "type",
+    label: t("prompts.promptType"),
+    options: promptTypes.map((type) => ({ value: type, label: t(`prompts.types.${type.toLowerCase()}`) })),
+    onSelect: (value) => {
+      if (value !== "all") analyticsSearch.filter("type", value);
+    },
+  };
+  const primaryValue = currentFilters[primary.param];
   const [tagSearch, setTagSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const { setFilterPending } = useFilterContext();
@@ -72,20 +93,20 @@ export function PromptFilters({ categories, tags, currentFilters, aiSearchEnable
       params.delete(key);
     }
     params.delete("page");
-    router.push(`/prompts?${params.toString()}`);
+    router.push(`${basePath}?${params.toString()}`);
   };
 
   const clearFilters = () => {
     setFilterPending(true);
     analyticsSearch.clearFilters();
-    router.push("/prompts");
+    router.push(basePath);
   };
 
   const selectedTags = currentFilters.tag ? currentFilters.tag.split(",").filter(Boolean) : [];
 
-  const hasFilters = currentFilters.q || currentFilters.type || currentFilters.category || currentFilters.tag || currentFilters.sort;
+  const hasFilters = currentFilters.q || primaryValue || currentFilters.category || currentFilters.tag || currentFilters.sort;
 
-  const activeFilterCount = [currentFilters.type, currentFilters.category, currentFilters.tag, currentFilters.sort && currentFilters.sort !== "newest"].filter(Boolean).length;
+  const activeFilterCount = [primaryValue, currentFilters.category, currentFilters.tag, currentFilters.sort && currentFilters.sort !== "newest"].filter(Boolean).length;
 
   return (
     <div className="space-y-4">
@@ -97,7 +118,7 @@ export function PromptFilters({ categories, tags, currentFilters, aiSearchEnable
           <div className="relative flex-1">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
-              placeholder={t("search.placeholder")}
+              placeholder={searchPlaceholder ?? t("search.placeholder")}
               className="h-8 text-xs pl-8"
               defaultValue={currentFilters.q}
               onChange={(e) => {
@@ -180,7 +201,7 @@ export function PromptFilters({ categories, tags, currentFilters, aiSearchEnable
         <div className="space-y-1.5">
           <Label className="text-xs">{t("search.search")}</Label>
           <Input
-            placeholder={t("search.placeholder")}
+            placeholder={searchPlaceholder ?? t("search.placeholder")}
             className="h-8 text-sm"
             defaultValue={currentFilters.q}
             onChange={(e) => {
@@ -220,16 +241,14 @@ export function PromptFilters({ categories, tags, currentFilters, aiSearchEnable
 
       {/* Shared filters - shown on desktop always, on mobile when showFilters is true */}
       <div className={`space-y-4 ${showFilters ? "block" : "hidden"} lg:block`}>
-      {/* Type filter */}
+      {/* Type (or platform) filter */}
       <div className="space-y-1.5">
-        <Label className="text-xs">{t("prompts.promptType")}</Label>
+        <Label className="text-xs">{primary.label}</Label>
         <Select
-          value={currentFilters.type || "all"}
+          value={primaryValue || "all"}
           onValueChange={(value) => {
-            if (value !== "all") {
-              analyticsSearch.filter("type", value);
-            }
-            updateFilter("type", value === "all" ? null : value);
+            primary.onSelect?.(value);
+            updateFilter(primary.param, value === "all" ? null : value);
           }}
         >
           <SelectTrigger className="h-8 text-sm w-full">
@@ -237,8 +256,8 @@ export function PromptFilters({ categories, tags, currentFilters, aiSearchEnable
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("common.all")}</SelectItem>
-            {promptTypes.map((type) => (
-              <SelectItem key={type} value={type}>{t(`prompts.types.${type.toLowerCase()}`)}</SelectItem>
+            {primary.options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -269,6 +288,7 @@ export function PromptFilters({ categories, tags, currentFilters, aiSearchEnable
                   <div key={parent.id}>
                     <SelectItem value={parent.slug} className="font-medium">
                       {parent.name}
+                      {parent.count !== undefined && <span className="ml-1.5 text-xs text-muted-foreground tabular-nums">{parent.count}</span>}
                     </SelectItem>
                     {/* Child categories */}
                     {categories
@@ -276,6 +296,7 @@ export function PromptFilters({ categories, tags, currentFilters, aiSearchEnable
                       .map((child) => (
                         <SelectItem key={child.id} value={child.slug} className="pl-6 text-muted-foreground">
                           ↳ {child.name}
+                          {child.count !== undefined && <span className="ml-1.5 text-xs tabular-nums">{child.count}</span>}
                         </SelectItem>
                       ))}
                   </div>

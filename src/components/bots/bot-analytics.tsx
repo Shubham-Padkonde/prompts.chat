@@ -30,16 +30,3 @@ export function BotCardLink({ botId, position, onClick, ...props }: LinkProps & 
     />
   );
 }
-
-/** `platform` is the URL param of the platform, or "all" */
-export function BotFilterLink({ platform, onClick, ...props }: LinkProps & { platform: string }) {
-  return (
-    <Link
-      {...props}
-      onClick={(event) => {
-        analyticsBot.filter(platform);
-        onClick?.(event);
-      }}
-    />
-  );
-}

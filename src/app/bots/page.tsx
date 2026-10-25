@@ -1,58 +1,75 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { BotFilterLink } from "@/components/bots/bot-analytics";
 import { getTranslations } from "next-intl/server";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BotCard } from "@/components/bots/bot-card";
+import { BotFilters } from "@/components/bots/bot-filters";
 import { JsonLd, collectionPageSchema } from "@/components/seo/structured-data";
-import { BOT_PLATFORMS, BOT_PLATFORM_INFO, listBots, platformFromParam } from "@/lib/bots";
+import { BOT_SORTS, getBotFilterOptions, listBots, platformFromParam, type BotSort } from "@/lib/bots";
 import { buildPageMetadata } from "@/lib/seo";
 import { getBotUrl } from "@/lib/urls";
-import { cn } from "@/lib/utils";
 
 const PER_PAGE = 24;
 
+type BotsSearchParams = {
+  q?: string;
+  platform?: string;
+  category?: string;
+  tag?: string;
+  sort?: string;
+  page?: string;
+};
+
 interface BotsPageProps {
-  searchParams: Promise<{ platform?: string; page?: string }>;
+  searchParams: Promise<BotsSearchParams>;
 }
 
+const FILTER_KEYS = ["q", "platform", "category", "tag", "sort"] as const;
+
 export async function generateMetadata({ searchParams }: BotsPageProps): Promise<Metadata> {
-  const { platform, page } = await searchParams;
+  const params = await searchParams;
   const t = await getTranslations("seo.bots");
   return buildPageMetadata({
     title: t("title"),
     description: t("description"),
     path: "/bots",
-    // Filtered and paginated views share the main canonical
-    noindex: !!platform || !!page,
+    // Filtered, sorted and paginated views share the main canonical
+    noindex: FILTER_KEYS.some((key) => !!params[key]) || !!params.page,
     image: "route",
   });
 }
 
-function pageHref(platformParam: string | undefined, page: number) {
-  const params = new URLSearchParams();
-  if (platformParam) params.set("platform", platformParam);
-  if (page > 1) params.set("page", String(page));
-  const query = params.toString();
-  return query ? `/bots?${query}` : "/bots";
+function pageHref(params: BotsSearchParams, page: number) {
+  const query = new URLSearchParams();
+  for (const key of FILTER_KEYS) {
+    if (params[key]) query.set(key, params[key]);
+  }
+  if (page > 1) query.set("page", String(page));
+  const search = query.toString();
+  return search ? `/bots?${search}` : "/bots";
 }
 
 export default async function BotsPage({ searchParams }: BotsPageProps) {
   const t = await getTranslations("bots");
   const tSeo = await getTranslations("seo.bots");
   const params = await searchParams;
-  const platform = platformFromParam(params.platform);
-  const platformParam = platform ? BOT_PLATFORM_INFO[platform].param : undefined;
   const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
+  const sort = BOT_SORTS.includes(params.sort as BotSort) ? (params.sort as BotSort) : "newest";
 
-  const { bots, total } = await listBots({ platform, skip: (page - 1) * PER_PAGE, take: PER_PAGE });
+  const [{ bots, total }, filterOptions] = await Promise.all([
+    listBots({
+      platform: platformFromParam(params.platform),
+      categorySlug: params.category,
+      tagSlugs: params.tag?.split(",").map((slug) => slug.trim()).filter(Boolean),
+      q: params.q,
+      sort,
+      skip: (page - 1) * PER_PAGE,
+      take: PER_PAGE,
+    }),
+    getBotFilterOptions(),
+  ]);
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-
-  const filters = [
-    { param: undefined, label: t("allPlatforms") },
-    ...BOT_PLATFORMS.map((value) => ({ param: BOT_PLATFORM_INFO[value].param, label: BOT_PLATFORM_INFO[value].name })),
-  ];
 
   return (
     <div className="container py-6">
@@ -60,7 +77,7 @@ export default async function BotsPage({ searchParams }: BotsPageProps) {
         data={collectionPageSchema({
           name: tSeo("heading"),
           description: tSeo("description"),
-          path: pageHref(platformParam, page),
+          path: pageHref(params, page),
           items: bots.map((bot) => ({ name: bot.title, path: getBotUrl(bot.id, bot.slug) })),
         })}
       />
@@ -79,57 +96,46 @@ export default async function BotsPage({ searchParams }: BotsPageProps) {
 
       <p className="text-sm text-muted-foreground mb-4">{t("description")}</p>
 
-      <nav aria-label={t("form.platform")} className="flex flex-wrap items-center gap-2 mb-6">
-        {filters.map((filter) => {
-          const active = platformParam === filter.param;
-          return (
-            <BotFilterLink
-              key={filter.label}
-              platform={filter.param ?? "all"}
-              href={pageHref(filter.param, 1)}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium leading-none whitespace-nowrap rounded-full border transition-colors",
-                active
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background hover:bg-accent border-border"
-              )}
-            >
-              {filter.label}
-            </BotFilterLink>
-          );
-        })}
-      </nav>
+      <div className="flex flex-col lg:flex-row gap-6">
+        <aside className="w-full lg:w-56 shrink-0 lg:sticky lg:top-16 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto">
+          <BotFilters
+            categories={filterOptions.categories}
+            tags={filterOptions.tags}
+            currentFilters={params}
+          />
+        </aside>
+        <main className="flex-1 min-w-0">
+          {bots.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {bots.map((bot, index) => (
+                <BotCard key={bot.id} bot={bot} position={(page - 1) * PER_PAGE + index + 1} />
+              ))}
+            </div>
+          ) : (
+            <p className="py-12 text-center text-sm text-muted-foreground">{t("noBots")}</p>
+          )}
 
-      {bots.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {bots.map((bot, index) => (
-            <BotCard key={bot.id} bot={bot} position={(page - 1) * PER_PAGE + index + 1} />
-          ))}
-        </div>
-      ) : (
-        <p className="py-12 text-center text-sm text-muted-foreground">{t("noBots")}</p>
-      )}
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8">
-          <Button size="icon" variant="outline" className="h-8 w-8" disabled={page <= 1} asChild={page > 1}>
-            {page > 1 ? (
-              <Link href={pageHref(platformParam, page - 1)}><ChevronLeft className="h-4 w-4" /></Link>
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
-          </Button>
-          <span className="text-sm tabular-nums px-2">{page} / {totalPages}</span>
-          <Button size="icon" variant="outline" className="h-8 w-8" disabled={page >= totalPages} asChild={page < totalPages}>
-            {page < totalPages ? (
-              <Link href={pageHref(platformParam, page + 1)}><ChevronRight className="h-4 w-4" /></Link>
-            ) : (
-              <ChevronRight className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      )}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-8">
+              <Button size="icon" variant="outline" className="h-8 w-8" disabled={page <= 1} asChild={page > 1}>
+                {page > 1 ? (
+                  <Link href={pageHref(params, page - 1)}><ChevronLeft className="h-4 w-4" /></Link>
+                ) : (
+                  <ChevronLeft className="h-4 w-4" />
+                )}
+              </Button>
+              <span className="text-sm tabular-nums px-2">{page} / {totalPages}</span>
+              <Button size="icon" variant="outline" className="h-8 w-8" disabled={page >= totalPages} asChild={page < totalPages}>
+                {page < totalPages ? (
+                  <Link href={pageHref(params, page + 1)}><ChevronRight className="h-4 w-4" /></Link>
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }
