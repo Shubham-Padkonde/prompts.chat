@@ -1062,9 +1062,9 @@
     "mostContributed": "En Çok Katkı Alanlar"
   },
   "homepage": {
-    "heroTitle": "AI Promptları için Özgür",
+    "heroTitle": "AI Agent'ları için Özgür",
     "heroSubtitle": "Sosyal Platform",
-    "heroDescription": "Promptlar tüm üretken yapay zekanın temelidir. Topluluktan paylaşın, keşfedin ve toplayın. Özgür ve açık kaynak — tam gizlilik ile kendi sunucunuzda barındırın.",
+    "heroDescription": "Promptlar, skill'ler, workflow'lar ve botlar; agent'ların ihtiyaç duyduğu her şey tek yerde. Topluluktan paylaşın, keşfedin, kurun. Özgür ve açık kaynak, dilerseniz tam gizlilikle kendi sunucunuzda barındırın.",
     "heroFeature1": "Özgür & Açık Kaynak",
     "heroFeature2": "Gizlilik için Self-host",
     "heroFeature3": "Ekipler & Organizasyonlar için",

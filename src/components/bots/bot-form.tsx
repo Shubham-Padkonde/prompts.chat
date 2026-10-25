@@ -38,6 +38,7 @@ import {
   type BotIconName,
   type BotPlatform,
 } from "@/lib/bots/schema";
+import { analyticsBot } from "@/lib/analytics";
 import { getBotUrl } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 
@@ -148,6 +149,8 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
         throw new Error("Failed to save bot");
       }
 
+      if (isEdit) analyticsBot.edit(botId);
+      else analyticsBot.create(data.botPlatforms);
       toast.success(isEdit ? t("form.updated") : t("form.created"));
       router.push(getBotUrl(result.id || botId, result.slug));
       router.refresh();

@@ -250,6 +250,70 @@ export function profilePageSchema(profile: ProfilePageSchemaInput): Schema {
   };
 }
 
+interface BotSchemaInput {
+  path: string;
+  name: string;
+  description: string;
+  platforms: string[];
+  author: { name: string; username: string };
+  keywords: string[];
+  features: string[];
+  dateCreated: Date;
+  dateModified: Date;
+}
+
+/**
+ * A bot page describes an installable agent configuration: the WebPage is the
+ * listing, its main entity is the SoftwareApplication running on each platform.
+ */
+export function botSchema(bot: BotSchemaInput): Schema[] {
+  const baseUrl = getBaseUrl();
+  const url = absoluteUrl(bot.path);
+  const keywords = [...new Map(bot.keywords.map((k) => [k.toLowerCase(), k])).values()];
+  const author = {
+    "@type": "Person",
+    name: bot.author.name,
+    alternateName: `@${bot.author.username}`,
+    url: absoluteUrl(`/@${bot.author.username}`),
+  };
+
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": url,
+      url,
+      name: bot.name,
+      description: bot.description,
+      isPartOf: { "@id": `${baseUrl}/#website` },
+      mainEntity: { "@id": `${url}#bot` },
+      datePublished: bot.dateCreated.toISOString(),
+      dateModified: bot.dateModified.toISOString(),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": `${url}#bot`,
+      url,
+      mainEntityOfPage: url,
+      name: bot.name,
+      description: bot.description,
+      applicationCategory: "UtilitiesApplication",
+      applicationSubCategory: "AI agent",
+      operatingSystem: bot.platforms.join(", "),
+      ...(bot.features.length > 0 && { featureList: bot.features }),
+      ...(keywords.length > 0 && { keywords: keywords.join(", ") }),
+      author,
+      creator: author,
+      dateCreated: bot.dateCreated.toISOString(),
+      dateModified: bot.dateModified.toISOString(),
+      isAccessibleForFree: true,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      license: "https://creativecommons.org/publicdomain/zero/1.0/",
+    },
+  ];
+}
+
 /**
  * Site-level Organization, WebSite and WebApplication schemas, rendered on the homepage
  */
