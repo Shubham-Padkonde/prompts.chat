@@ -195,7 +195,8 @@
       "structured": "Strukturiert",
       "document": "Dokument",
       "skill": "Skill",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "Bot"
     },
     "inputType": "Benutzer-Prompt",
     "outputType": "KI-Antwort",
@@ -1037,7 +1038,9 @@
       "music": "Musik",
       "heart": "Herz",
       "coffee": "Kaffee"
-    }
+    },
+    "latestBots": "Neueste Bots",
+    "viewAll": "Alle anzeigen"
   },
   "collection": {
     "title": "Meine Sammlung",

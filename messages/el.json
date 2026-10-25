@@ -195,7 +195,8 @@
       "structured": "Δομημένο",
       "document": "Έγγραφο",
       "skill": "Δεξιότητα",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "Bot"
     },
     "inputType": "Prompt χρήστη",
     "outputType": "Απάντηση AI",
@@ -1037,7 +1038,9 @@
       "music": "Μουσική",
       "heart": "Καρδιά",
       "coffee": "Καφές"
-    }
+    },
+    "latestBots": "Πιο πρόσφατα bots",
+    "viewAll": "Προβολή όλων"
   },
   "collection": {
     "title": "Η Συλλογή μου",

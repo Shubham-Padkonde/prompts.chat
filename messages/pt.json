@@ -195,7 +195,8 @@
       "structured": "Estruturado",
       "document": "Documento",
       "skill": "Habilidade",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "Bot"
     },
     "inputType": "Prompt do Usuário",
     "outputType": "Resposta da IA",
@@ -1037,7 +1038,9 @@
       "music": "Música",
       "heart": "Coração",
       "coffee": "Café"
-    }
+    },
+    "latestBots": "Bots mais recentes",
+    "viewAll": "Ver todos"
   },
   "collection": {
     "title": "Minha Coleção",

@@ -195,7 +195,8 @@
       "structured": "構造化",
       "document": "ドキュメント",
       "skill": "スキル",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "ボット"
     },
     "inputType": "ユーザープロンプト",
     "outputType": "AI応答",
@@ -1037,7 +1038,9 @@
       "music": "音楽",
       "heart": "ハート",
       "coffee": "コーヒー"
-    }
+    },
+    "latestBots": "最新のボット",
+    "viewAll": "すべて表示"
   },
   "collection": {
     "title": "マイコレクション",

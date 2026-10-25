@@ -195,7 +195,8 @@
       "structured": "Strukturlaşdırılmış",
       "document": "Sənəd",
       "skill": "Bacarıq",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "Bot"
     },
     "inputType": "İstifadəçi Promptu",
     "outputType": "AI Cavabı",
@@ -1037,7 +1038,9 @@
       "music": "Musiqi",
       "heart": "Ürək",
       "coffee": "Qəhvə"
-    }
+    },
+    "latestBots": "Ən son botlar",
+    "viewAll": "Hamısına bax"
   },
   "collection": {
     "title": "Kolleksiyam",

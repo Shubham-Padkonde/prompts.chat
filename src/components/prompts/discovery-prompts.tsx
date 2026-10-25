@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Masonry } from "@/components/ui/masonry";
 import { PromptCard } from "@/components/prompts/prompt-card";
+import { LatestBots } from "@/components/bots/latest-bots";
 
 interface DiscoveryPromptsProps {
   isHomepage?: boolean;
@@ -156,6 +157,8 @@ export async function DiscoveryPrompts({ isHomepage = false }: DiscoveryPromptsP
           </div>
         </section>
       )}
+
+      {isHomepage && <LatestBots />}
 
       {/* Today's Most Upvoted Section */}
       {todaysMostUpvoted.length > 0 && (

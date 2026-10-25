@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { ArrowBigUp } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { getPromptUrl } from "@/lib/urls";
+import { getBotUrl, getPromptUrl } from "@/lib/urls";
 
 interface RelatedPrompt {
   id: string;
@@ -47,7 +47,7 @@ export function RelatedPrompts({ prompts }: RelatedPromptsProps) {
         {prompts.map((prompt) => (
           <Link
             key={prompt.id}
-            href={getPromptUrl(prompt.id, prompt.slug)}
+            href={prompt.type === "BOT" ? getBotUrl(prompt.id, prompt.slug) : getPromptUrl(prompt.id, prompt.slug)}
             className="group border rounded-[var(--radius)] p-4 hover:border-foreground/20 transition-colors flex flex-col"
           >
             {/* Header */}

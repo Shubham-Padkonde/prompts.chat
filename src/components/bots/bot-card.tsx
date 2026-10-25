@@ -1,23 +1,77 @@
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import { Clock, Star, Zap } from "lucide-react";
 import { BotAvatar } from "@/components/bots/bot-avatar";
 import { BotPlatformIcons } from "@/components/bots/bot-platform-icons";
-import type { BotView } from "@/lib/bots";
+import {
+  isBotColor,
+  isBotIconName,
+  parseBotConfig,
+  resolveBotPlatforms,
+  type BotColor,
+  type BotConfig,
+  type BotIconName,
+  type BotPlatform,
+} from "@/lib/bots/schema";
 import { getBotUrl } from "@/lib/urls";
 
-interface BotCardProps {
-  bot: BotView;
+/** The subset of BotView a card needs; BotView satisfies it */
+export interface BotCardData {
+  id: string;
+  slug: string | null;
+  title: string;
+  description: string | null;
+  platforms: BotPlatform[];
+  icon: BotIconName | null;
+  color: BotColor | null;
+  isFeatured: boolean;
+  config: Pick<BotConfig, "routines">;
+  author: { username: string };
 }
 
-export async function BotCard({ bot }: BotCardProps) {
-  const t = await getTranslations("bots");
+/** BOT-type prompt rows as returned by prompt list queries */
+export interface BotPromptFields {
+  id: string;
+  slug?: string | null;
+  title: string;
+  description: string | null;
+  isFeatured?: boolean;
+  botIcon?: string | null;
+  botColor?: string | null;
+  botPlatforms?: readonly BotPlatform[] | null;
+  botPlatform?: BotPlatform | null;
+  botConfig?: unknown;
+  author: { username: string };
+}
+
+export function promptToBotCardData(prompt: BotPromptFields): BotCardData {
+  return {
+    id: prompt.id,
+    slug: prompt.slug ?? null,
+    title: prompt.title,
+    description: prompt.description,
+    platforms: resolveBotPlatforms(prompt),
+    icon: prompt.botIcon && isBotIconName(prompt.botIcon) ? prompt.botIcon : null,
+    color: prompt.botColor && isBotColor(prompt.botColor) ? prompt.botColor : null,
+    isFeatured: prompt.isFeatured ?? false,
+    config: parseBotConfig(prompt.botConfig),
+    author: prompt.author,
+  };
+}
+
+interface BotCardProps {
+  bot: BotCardData;
+}
+
+export function BotCard({ bot }: BotCardProps) {
+  const t = useTranslations("bots");
   const scheduled = bot.config.routines.filter((r) => r.type === "schedule").length;
   const events = bot.config.routines.length - scheduled;
 
   return (
     <Link
       href={getBotUrl(bot.id, bot.slug)}
+      prefetch={false}
       className="group flex flex-col gap-3 rounded-[var(--radius)] border bg-card p-4 transition-colors hover:border-foreground/30 hover:bg-accent/40"
     >
       <div className="flex items-start justify-between gap-2">

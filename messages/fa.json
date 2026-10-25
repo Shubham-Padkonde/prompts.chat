@@ -195,7 +195,8 @@
       "structured": "ساختارمند",
       "document": "سند",
       "skill": "مهارت",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "ربات"
     },
     "inputType": "پرامپت کاربر",
     "outputType": "پاسخ هوش مصنوعی",
@@ -1037,7 +1038,9 @@
       "music": "موسیقی",
       "heart": "قلب",
       "coffee": "قهوه"
-    }
+    },
+    "latestBots": "جدیدترین ربات‌ها",
+    "viewAll": "مشاهده همه"
   },
   "collection": {
     "title": "مجموعه من",

@@ -195,7 +195,8 @@
       "structured": "结构化",
       "document": "文档",
       "skill": "技能",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "机器人"
     },
     "inputType": "用户提示词",
     "outputType": "AI 响应",
@@ -1037,7 +1038,9 @@
       "music": "音乐",
       "heart": "爱心",
       "coffee": "咖啡"
-    }
+    },
+    "latestBots": "最新机器人",
+    "viewAll": "查看全部"
   },
   "collection": {
     "title": "我的收藏",

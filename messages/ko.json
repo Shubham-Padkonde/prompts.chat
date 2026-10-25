@@ -195,7 +195,8 @@
       "structured": "구조화",
       "document": "문서",
       "skill": "스킬",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "봇"
     },
     "inputType": "사용자 프롬프트",
     "outputType": "AI 응답",
@@ -1037,7 +1038,9 @@
       "music": "음악",
       "heart": "하트",
       "coffee": "커피"
-    }
+    },
+    "latestBots": "최신 봇",
+    "viewAll": "모두 보기"
   },
   "collection": {
     "title": "내 컬렉션",

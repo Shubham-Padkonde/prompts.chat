@@ -195,7 +195,8 @@
       "structured": "Структурированный",
       "document": "Документ",
       "skill": "Навык",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "Бот"
     },
     "inputType": "Промпт пользователя",
     "outputType": "Ответ ИИ",
@@ -1037,7 +1038,9 @@
       "music": "Музыка",
       "heart": "Сердце",
       "coffee": "Кофе"
-    }
+    },
+    "latestBots": "Новые боты",
+    "viewAll": "Смотреть все"
   },
   "collection": {
     "title": "Моя Коллекция",

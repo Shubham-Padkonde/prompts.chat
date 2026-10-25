@@ -195,7 +195,8 @@
       "structured": "Gestructureerd",
       "document": "Document",
       "skill": "Vaardigheid",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "Bot"
     },
     "inputType": "Gebruikersprompt",
     "outputType": "AI-antwoord",
@@ -1037,7 +1038,9 @@
       "music": "Muziek",
       "heart": "Hart",
       "coffee": "Koffie"
-    }
+    },
+    "latestBots": "Nieuwste bots",
+    "viewAll": "Alles bekijken"
   },
   "collection": {
     "title": "Mijn collectie",

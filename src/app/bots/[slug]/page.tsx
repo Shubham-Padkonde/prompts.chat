@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowLeft, Clock, EyeOff, Pencil, Plug, Sparkles, Star, Zap } from "lucide-react";
+import { ArrowLeft, Clock, EyeOff, Pencil, Plug, Shield, Sparkles, Star, Trash2, Zap } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,10 @@ import { Button } from "@/components/ui/button";
 import { BotAvatar } from "@/components/bots/bot-avatar";
 import { BotInstall } from "@/components/bots/bot-install";
 import { BotPlatformBadge } from "@/components/bots/bot-platform-badge";
+import { DelistBanner } from "@/components/prompts/delist-banner";
+import { FeaturePromptButton } from "@/components/prompts/feature-prompt-button";
+import { RestorePromptButton } from "@/components/prompts/restore-prompt-button";
+import { UnlistPromptButton } from "@/components/prompts/unlist-prompt-button";
 import { JsonLd, breadcrumbSchema } from "@/components/seo/structured-data";
 import { extractBotId, formatBotPlatforms, getBotById, getBotInstallOptions, getBotUrls } from "@/lib/bots";
 import { canViewPrompt } from "@/lib/prompt-access";
@@ -36,8 +40,9 @@ export async function generateMetadata({ params }: BotPageProps): Promise<Metada
 
 export default async function BotPage({ params }: BotPageProps) {
   const { slug } = await params;
-  const bot = await getBotById(extractBotId(slug));
   const session = await auth();
+  const isAdmin = session?.user?.role === "ADMIN";
+  const bot = await getBotById(extractBotId(slug), { includeDeleted: isAdmin });
   if (!bot || !canViewPrompt(bot, session)) {
     notFound();
   }
@@ -50,7 +55,9 @@ export default async function BotPage({ params }: BotPageProps) {
   const t = await getTranslations("bots");
   const tNav = await getTranslations("nav");
   const baseUrl = getBaseUrl();
-  const canEdit = session?.user?.id === bot.authorId || session?.user?.role === "ADMIN";
+  const tPrompts = await getTranslations("prompts");
+  const isOwner = session?.user?.id === bot.authorId;
+  const canEdit = isOwner || isAdmin;
   const { routines, skills, connectors } = bot.config;
 
   return (
@@ -61,6 +68,25 @@ export default async function BotPage({ params }: BotPageProps) {
           { name: bot.title, path: canonicalPath },
         ])}
       />
+
+      {bot.deletedAt && isAdmin && (
+        <div className="mb-6 p-4 rounded-lg border border-red-500/30 bg-red-500/5">
+          <div className="flex items-start gap-3">
+            <Trash2 className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+            <div className="space-y-1 flex-1">
+              <h3 className="text-sm font-semibold text-red-700 dark:text-red-400">{tPrompts("promptDeleted")}</h3>
+              <p className="text-sm text-red-600 dark:text-red-500">{tPrompts("promptDeletedDescription")}</p>
+            </div>
+          </div>
+          <div className="flex justify-end mt-4">
+            <RestorePromptButton promptId={bot.id} />
+          </div>
+        </div>
+      )}
+
+      {bot.isUnlisted && bot.delistReason && (isOwner || isAdmin) && (
+        <DelistBanner promptId={bot.id} delistReason={bot.delistReason} isOwner={isOwner} isDeleted={!!bot.deletedAt} />
+      )}
 
       <div className="mb-4 flex items-center justify-between gap-2">
         <Link href="/bots" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
@@ -183,6 +209,25 @@ export default async function BotPage({ params }: BotPageProps) {
           <BotInstall options={getBotInstallOptions(bot, baseUrl)} urls={getBotUrls(bot, baseUrl)} />
         </aside>
       </div>
+
+      {isAdmin && (
+        <div className="mt-8 p-4 rounded-lg border border-red-500/30 bg-red-500/5">
+          <div className="flex items-center gap-2 mb-3">
+            <Shield className="h-4 w-4 text-red-500" />
+            <h3 className="text-sm font-semibold text-red-500">{tPrompts("adminArea")}</h3>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <FeaturePromptButton promptId={bot.id} isFeatured={bot.isFeatured} />
+            <UnlistPromptButton promptId={bot.id} isUnlisted={bot.isUnlisted} />
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`${canonicalPath}/edit`}>
+                <Pencil className="h-4 w-4 mr-2" />
+                {t("edit")}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

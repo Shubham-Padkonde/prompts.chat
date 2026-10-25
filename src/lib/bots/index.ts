@@ -30,6 +30,8 @@ export const botSelect = {
   isPrivate: true,
   isUnlisted: true,
   isFeatured: true,
+  delistReason: true,
+  deletedAt: true,
   authorId: true,
   createdAt: true,
   updatedAt: true,
@@ -55,6 +57,8 @@ export interface BotView {
   isPrivate: boolean;
   isUnlisted: boolean;
   isFeatured: boolean;
+  delistReason: BotRecord["delistReason"];
+  deletedAt: Date | null;
   authorId: string;
   author: BotRecord["author"];
   createdAt: Date;
@@ -80,6 +84,8 @@ export function toBotView(record: BotRecord): BotView {
     isPrivate: record.isPrivate,
     isUnlisted: record.isUnlisted,
     isFeatured: record.isFeatured,
+    delistReason: record.delistReason,
+    deletedAt: record.deletedAt,
     authorId: record.authorId,
     author: record.author,
     createdAt: record.createdAt,
@@ -114,10 +120,21 @@ export async function listBots({
   return { bots: records.map(toBotView), total };
 }
 
-/** Finds a non-deleted bot by id. Callers check privacy with canViewPrompt. */
-export async function getBotById(id: string): Promise<BotView | null> {
+/** Most recently added public bots, newest first */
+export async function listLatestBots(take = 6): Promise<BotView[]> {
+  const records = await db.prompt.findMany({
+    where: publicBotWhere,
+    orderBy: { createdAt: "desc" },
+    take,
+    select: botSelect,
+  });
+  return records.map(toBotView);
+}
+
+/** Finds a bot by id, skipping soft-deleted ones unless asked. Callers check privacy with canViewPrompt. */
+export async function getBotById(id: string, { includeDeleted = false } = {}): Promise<BotView | null> {
   const record = await db.prompt.findFirst({
-    where: { id, type: "BOT", deletedAt: null },
+    where: { id, type: "BOT", ...(includeDeleted ? {} : { deletedAt: null }) },
     select: botSelect,
   });
   return record ? toBotView(record) : null;

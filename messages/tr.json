@@ -195,7 +195,8 @@
       "structured": "Yapılandırılmış",
       "document": "Doküman",
       "skill": "Yetenek",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "Bot"
     },
     "inputType": "Kullanıcı Promptu",
     "outputType": "AI Yanıtı",
@@ -1037,7 +1038,9 @@
       "music": "Müzik",
       "heart": "Kalp",
       "coffee": "Kahve"
-    }
+    },
+    "latestBots": "Son Botlar",
+    "viewAll": "Tümünü gör"
   },
   "collection": {
     "title": "Koleksiyonum",

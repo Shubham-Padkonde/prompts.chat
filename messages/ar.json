@@ -195,7 +195,8 @@
       "structured": "منظم",
       "document": "مستند",
       "skill": "مهارة",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "بوت"
     },
     "inputType": "أمر المستخدم",
     "outputType": "استجابة الذكاء الاصطناعي",
@@ -1037,7 +1038,9 @@
       "music": "موسيقى",
       "heart": "قلب",
       "coffee": "قهوة"
-    }
+    },
+    "latestBots": "أحدث البوتات",
+    "viewAll": "عرض الكل"
   },
   "collection": {
     "title": "مجموعتي",

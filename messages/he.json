@@ -195,7 +195,8 @@
       "structured": "מובנה",
       "document": "מסמך",
       "skill": "מיומנות",
-      "taste": "Taste"
+      "taste": "Taste",
+      "bot": "בוט"
     },
     "inputType": "פרומפט משתמש",
     "outputType": "תגובת AI",
@@ -1037,7 +1038,9 @@
       "music": "מוזיקה",
       "heart": "לב",
       "coffee": "קפה"
-    }
+    },
+    "latestBots": "הבוטים האחרונים",
+    "viewAll": "הצג הכול"
   },
   "collection": {
     "title": "האוסף שלי",
