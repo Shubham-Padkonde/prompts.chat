@@ -283,7 +283,7 @@ export default async function BotPage({ params }: BotPageProps) {
             </section>
           )}
 
-          {config.features.comments !== false && !bot.isPrivate && (
+          {config.features.comments !== false && !bot.isPrivate && !bot.deletedAt && (
             <CommentSection
               promptId={bot.id}
               currentUserId={session?.user?.id}

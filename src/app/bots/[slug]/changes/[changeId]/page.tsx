@@ -19,7 +19,8 @@ interface BotChangeRequestPageProps {
 
 export default async function BotChangeRequestPage({ params }: BotChangeRequestPageProps) {
   const { slug, changeId } = await params;
-  const [bot, session] = await Promise.all([getBotById(extractBotId(slug)), auth()]);
+  const session = await auth();
+  const bot = await getBotById(extractBotId(slug), { includeDeleted: session?.user?.role === "ADMIN" });
   if (!bot || !canViewPrompt(bot, session)) {
     notFound();
   }
