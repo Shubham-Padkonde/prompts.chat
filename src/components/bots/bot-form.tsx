@@ -25,6 +25,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { BotPlatformIcon } from "@/components/bots/bot-platform-icon";
 import { BotAppearancePicker } from "@/components/bots/bot-appearance-picker";
+import { CategorySelect, type CategoryOption } from "@/components/prompts/category-select";
+import { TagPicker, type TagOption } from "@/components/prompts/tag-picker";
 import {
   BOT_COLORS,
   BOT_ICONS,
@@ -54,6 +56,8 @@ const botFormSchema = z.object({
     .refine((value) => value === "" || /^https:\/\/\S+$/.test(value), { message: "https://…" }),
   content: z.string().trim().min(1),
   isPrivate: z.boolean(),
+  categoryId: z.string().optional(),
+  tagIds: z.array(z.string()),
   routines: z.array(botRoutineSchema).max(20),
   skills: z.array(botSkillSchema).max(20),
   connectors: z.string().max(1000),
@@ -70,6 +74,8 @@ export interface BotFormInitialData {
   installUrl: string;
   content: string;
   isPrivate: boolean;
+  categoryId?: string;
+  tagIds: string[];
   config: BotConfig;
 }
 
@@ -77,13 +83,15 @@ interface BotFormProps {
   mode: "create" | "edit";
   botId?: string;
   initialData?: BotFormInitialData;
+  categories: CategoryOption[];
+  tags: TagOption[];
 }
 
 function parseConnectors(value: string): string[] {
   return Array.from(new Set(value.split(",").map((c) => c.trim()).filter(Boolean))).slice(0, 20);
 }
 
-export function BotForm({ mode, botId, initialData }: BotFormProps) {
+export function BotForm({ mode, botId, initialData, categories, tags }: BotFormProps) {
   const t = useTranslations("bots");
   const tPrompts = useTranslations("prompts");
   const tCommon = useTranslations("common");
@@ -101,6 +109,8 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
       installUrl: initialData?.installUrl ?? "",
       content: initialData?.content ?? "",
       isPrivate: initialData?.isPrivate ?? false,
+      categoryId: initialData?.categoryId,
+      tagIds: initialData?.tagIds ?? [],
       routines: initialData?.config.routines ?? [],
       skills: initialData?.config.skills ?? [],
       connectors: initialData?.config.connectors.join(", ") ?? "",
@@ -119,6 +129,8 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
         description: data.description,
         content: data.content,
         isPrivate: data.isPrivate,
+        categoryId: data.categoryId ?? "",
+        tagIds: data.tagIds,
         botPlatforms: data.botPlatforms,
         botIcon: data.botIcon || null,
         botColor: data.botColor || null,
@@ -133,7 +145,7 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
       const response = await fetch(isEdit ? `/api/prompts/${botId}` : "/api/prompts", {
         method: isEdit ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(isEdit ? payload : { ...payload, type: "BOT", tagIds: [] }),
+        body: JSON.stringify(isEdit ? payload : { ...payload, type: "BOT" }),
       });
       const result = await response.json();
 
@@ -264,6 +276,35 @@ export function BotForm({ mode, botId, initialData }: BotFormProps) {
               </FormItem>
             )}
           />
+
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+            <FormField
+              control={form.control}
+              name="categoryId"
+              render={({ field }) => (
+                <FormItem className="w-full sm:w-64">
+                  <FormLabel>{tPrompts("promptCategory")}</FormLabel>
+                  <CategorySelect categories={categories} value={field.value} onChange={field.onChange} />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="tagIds"
+              render={({ field }) => (
+                <FormItem className="flex-1 min-w-0">
+                  <FormLabel>{tPrompts("promptTags")}</FormLabel>
+                  <TagPicker
+                    tags={tags}
+                    value={field.value}
+                    onChange={(value) => form.setValue("tagIds", value, { shouldDirty: true })}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           <FormField
             control={form.control}

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { BOT_PLATFORM_INFO, getBotUrls, listBots, platformFromParam } from "@/lib/bots";
+import { BOT_PLATFORM_INFO, BOT_SORTS, botCategoryJson, botTagsJson, getBotUrls, listBots, platformFromParam, type BotSort } from "@/lib/bots";
 import { getBaseUrl } from "@/lib/seo";
 
 const MAX_BOTS = 500;
@@ -8,7 +8,15 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const platform = platformFromParam(searchParams.get("platform") ?? undefined);
   const baseUrl = getBaseUrl();
-  const { bots, total } = await listBots({ platform, take: MAX_BOTS });
+  const sort = searchParams.get("sort");
+  const { bots, total } = await listBots({
+    platform,
+    categorySlug: searchParams.get("category") ?? undefined,
+    tagSlugs: searchParams.get("tag")?.split(",").map((slug) => slug.trim()).filter(Boolean),
+    q: searchParams.get("q") ?? undefined,
+    sort: BOT_SORTS.includes(sort as BotSort) ? (sort as BotSort) : undefined,
+    take: MAX_BOTS,
+  });
 
   return NextResponse.json(
     {
@@ -23,6 +31,8 @@ export async function GET(request: Request) {
         icon: bot.icon,
         color: bot.color,
         installUrl: bot.installUrl,
+        category: botCategoryJson(bot),
+        tags: botTagsJson(bot),
         author: bot.author.username,
         urls: getBotUrls(bot, baseUrl),
       })),

@@ -37,6 +37,8 @@ export const botSelect = {
   updatedAt: true,
   author: { select: { username: true, name: true, avatar: true, verified: true } },
   _count: { select: { votes: true } },
+  category: { select: { id: true, name: true, slug: true, parent: { select: { id: true, name: true, slug: true } } } },
+  tags: { select: { tag: { select: { id: true, name: true, slug: true, color: true } } } },
 } satisfies Prisma.PromptSelect;
 
 type BotRecord = Prisma.PromptGetPayload<{ select: typeof botSelect }>;
@@ -63,6 +65,8 @@ export interface BotView {
   authorId: string;
   author: BotRecord["author"];
   voteCount: number;
+  category: BotRecord["category"];
+  tags: BotRecord["tags"][number]["tag"][];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -91,6 +95,8 @@ export function toBotView(record: BotRecord): BotView {
     authorId: record.authorId,
     author: record.author,
     voteCount: record._count.votes,
+    category: record.category,
+    tags: record.tags.map(({ tag }) => tag),
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
   };
@@ -104,20 +110,47 @@ export const publicBotWhere = {
   deletedAt: null,
 } satisfies Prisma.PromptWhereInput;
 
-export async function listBots({
-  platform,
-  skip = 0,
-  take = 24,
-}: { platform?: BotPlatform; skip?: number; take?: number } = {}) {
-  const where: Prisma.PromptWhereInput = { ...publicBotWhere, ...(platform && { botPlatforms: { has: platform } }) };
-  const [records, total] = await Promise.all([
-    db.prompt.findMany({
-      where,
-      orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
-      skip,
-      take,
-      select: botSelect,
+export const BOT_SORTS = ["newest", "oldest", "upvotes"] as const;
+export type BotSort = (typeof BOT_SORTS)[number];
+
+export interface BotListFilters {
+  platform?: BotPlatform;
+  /** Matches the category and, for a parent category, its subcategories */
+  categorySlug?: string;
+  /** Every tag must match */
+  tagSlugs?: string[];
+  /** Comma-separated keywords; any of them may match */
+  q?: string;
+  sort?: BotSort;
+}
+
+function botListWhere({ platform, categorySlug, tagSlugs = [], q }: BotListFilters): Prisma.PromptWhereInput {
+  const keywords = (q ?? "").split(",").map((k) => k.trim()).filter(Boolean);
+  return {
+    ...publicBotWhere,
+    ...(platform && { botPlatforms: { has: platform } }),
+    ...(categorySlug && { category: { OR: [{ slug: categorySlug }, { parent: { slug: categorySlug } }] } }),
+    ...(tagSlugs.length > 0 && { AND: tagSlugs.map((slug) => ({ tags: { some: { tag: { slug } } } })) }),
+    ...(keywords.length > 0 && {
+      OR: keywords.flatMap((keyword) => [
+        { title: { contains: keyword, mode: "insensitive" as const } },
+        { description: { contains: keyword, mode: "insensitive" as const } },
+        { content: { contains: keyword, mode: "insensitive" as const } },
+      ]),
     }),
+  };
+}
+
+const BOT_ORDER: Record<BotSort, Prisma.PromptOrderByWithRelationInput[]> = {
+  newest: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+  oldest: [{ createdAt: "asc" }],
+  upvotes: [{ votes: { _count: "desc" } }, { createdAt: "desc" }],
+};
+
+export async function listBots({ skip = 0, take = 24, ...filters }: BotListFilters & { skip?: number; take?: number } = {}) {
+  const where = botListWhere(filters);
+  const [records, total] = await Promise.all([
+    db.prompt.findMany({ where, orderBy: BOT_ORDER[filters.sort ?? "newest"], skip, take, select: botSelect }),
     db.prompt.count({ where }),
   ]);
   return { bots: records.map(toBotView), total };
@@ -134,6 +167,39 @@ export async function listBotsByAuthor(
     db.prompt.count({ where }),
   ]);
   return { bots: records.map(toBotView), total };
+}
+
+/**
+ * Sidebar options for /bots: categories that hold public bots (parents included, with bot
+ * counts that roll subcategories up into their parent) and tags used on public bots
+ */
+export async function getBotFilterOptions() {
+  const [byCategory, tagRows] = await Promise.all([
+    db.prompt.groupBy({ by: ["categoryId"], where: { ...publicBotWhere, categoryId: { not: null } }, _count: { _all: true } }),
+    db.tag.findMany({
+      where: { prompts: { some: { prompt: publicBotWhere } } },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, slug: true, color: true },
+    }),
+  ]);
+  const direct = new Map(byCategory.map((row) => [row.categoryId as string, row._count._all]));
+  const used = await db.category.findMany({
+    where: { id: { in: [...direct.keys()] } },
+    select: { id: true, parentId: true },
+  });
+  const counts = new Map(direct);
+  for (const category of used) {
+    if (category.parentId) counts.set(category.parentId, (counts.get(category.parentId) ?? 0) + (direct.get(category.id) ?? 0));
+  }
+  const categories = await db.category.findMany({
+    where: { id: { in: [...counts.keys()] } },
+    orderBy: [{ order: "asc" }, { name: "asc" }],
+    select: { id: true, name: true, slug: true, parentId: true },
+  });
+  return {
+    categories: categories.map((category) => ({ ...category, count: counts.get(category.id) ?? 0 })),
+    tags: tagRows,
+  };
 }
 
 /** Most recently added public bots, newest first */
@@ -302,6 +368,8 @@ export function botToMarkdown(bot: BotView, baseUrl: string): string {
     `name: ${JSON.stringify(bot.title)}`,
     `platforms: [${bot.platforms.join(", ")}]`,
     ...(bot.description ? [`description: ${JSON.stringify(bot.description)}`] : []),
+    ...(bot.category ? [`category: ${JSON.stringify(bot.category.name)}`] : []),
+    ...(bot.tags.length > 0 ? [`tags: [${bot.tags.map((tag) => JSON.stringify(tag.name)).join(", ")}]`] : []),
     `author: ${bot.author.username}`,
     "---",
   ].join("\n");
@@ -320,6 +388,16 @@ export function botToSkill(bot: BotView, baseUrl: string): string {
   return `${frontmatter}\n\n# ${bot.title}\n\n${botBody(bot, baseUrl)}\n`;
 }
 
+export function botCategoryJson(bot: Pick<BotView, "category">) {
+  if (!bot.category) return null;
+  const { name, slug, parent } = bot.category;
+  return { name, slug, parent: parent ? { name: parent.name, slug: parent.slug } : null };
+}
+
+export function botTagsJson(bot: Pick<BotView, "tags">) {
+  return bot.tags.map(({ name, slug }) => ({ name, slug }));
+}
+
 export function botToJson(bot: BotView, baseUrl: string) {
   return {
     id: bot.id,
@@ -335,6 +413,8 @@ export function botToJson(bot: BotView, baseUrl: string) {
     skills: bot.config.skills,
     connectors: bot.config.connectors,
     installUrl: bot.installUrl,
+    category: botCategoryJson(bot),
+    tags: botTagsJson(bot),
     author: { username: bot.author.username, name: bot.author.name },
     createdAt: bot.createdAt,
     updatedAt: bot.updatedAt,

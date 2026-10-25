@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { BotForm } from "@/components/bots/bot-form";
 import { extractBotId, getBotById } from "@/lib/bots";
 import { NOINDEX_ROBOTS } from "@/lib/seo";
@@ -31,11 +32,21 @@ export default async function EditBotPage({ params }: EditBotPageProps) {
     redirect(getBotUrl(bot.id, bot.slug));
   }
 
+  const [categories, tags] = await Promise.all([
+    db.category.findMany({
+      orderBy: [{ order: "asc" }, { name: "asc" }],
+      select: { id: true, name: true, slug: true, parentId: true },
+    }),
+    db.tag.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true, slug: true, color: true } }),
+  ]);
+
   return (
     <div className="container max-w-3xl py-8">
       <BotForm
         mode="edit"
         botId={bot.id}
+        categories={categories}
+        tags={tags}
         initialData={{
           title: bot.title,
           description: bot.description ?? "",
@@ -45,6 +56,8 @@ export default async function EditBotPage({ params }: EditBotPageProps) {
           installUrl: bot.installUrl ?? "",
           content: bot.instructions,
           isPrivate: bot.isPrivate,
+          categoryId: bot.category?.id,
+          tagIds: bot.tags.map((tag) => tag.id),
           config: bot.config,
         }}
       />

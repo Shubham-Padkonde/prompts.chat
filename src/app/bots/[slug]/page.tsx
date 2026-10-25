@@ -98,7 +98,13 @@ export default async function BotPage({ params }: BotPageProps) {
             description: toMetaDescription(bot.description || bot.instructions),
             platforms: platformNames,
             author: { name: bot.author.name || bot.author.username, username: bot.author.username },
-            keywords: [...platformNames, ...skills.map((skill) => skill.name), ...connectors],
+            keywords: [
+              ...platformNames,
+              ...(bot.category ? [bot.category.name] : []),
+              ...bot.tags.map((tag) => tag.name),
+              ...skills.map((skill) => skill.name),
+              ...connectors,
+            ],
             features: routines.map((routine) => routine.name),
             dateCreated: bot.createdAt,
             dateModified: bot.updatedAt,
@@ -177,6 +183,30 @@ export default async function BotPage({ params }: BotPageProps) {
           <h1 className="min-w-0 flex-1 text-xl sm:text-2xl font-semibold wrap-anywhere">{bot.title}</h1>
         </div>
         {bot.description && <p className="text-muted-foreground wrap-anywhere">{bot.description}</p>}
+        {(bot.category || bot.tags.length > 0) && (
+          <div className="flex flex-wrap items-center gap-2">
+            {bot.category && (
+              <Link href={`/categories/${bot.category.slug}`} className="max-w-full">
+                <Badge variant="outline" className="max-w-full whitespace-normal wrap-anywhere">
+                  {bot.category.parent && `${bot.category.parent.name} › `}
+                  {bot.category.name}
+                </Badge>
+              </Link>
+            )}
+            {bot.category && bot.tags.length > 0 && <span className="text-muted-foreground">•</span>}
+            {bot.tags.map((tag) => (
+              <Link key={tag.id} href={`/tags/${tag.slug}`} className="max-w-full">
+                <Badge
+                  variant="secondary"
+                  className="max-w-full whitespace-normal wrap-anywhere"
+                  style={{ backgroundColor: tag.color + "20", color: tag.color }}
+                >
+                  {tag.name}
+                </Badge>
+              </Link>
+            ))}
+          </div>
+        )}
         <Link href={`/@${bot.author.username}`} className="inline-flex max-w-full items-center gap-2 text-sm text-muted-foreground hover:text-foreground wrap-anywhere">
           <Avatar className="h-5 w-5">
             <AvatarImage src={bot.author.avatar || undefined} alt={bot.author.username} />
