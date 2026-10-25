@@ -2493,7 +2493,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - AI prompts",
-      "description": "Δείτε {count} AI prompts που μοιράστηκε το μέλος {name} (@{username}) στο prompts.chat, τη δωρεάν βιβλιοθήκη prompts ανοιχτού κώδικα."
+      "description": "Δείτε {count} AI prompts που μοιράστηκε το μέλος {name} (@{username}) στο prompts.chat, τη δωρεάν βιβλιοθήκη prompts ανοιχτού κώδικα.",
+      "descriptionWithBots": "Δείτε {count} AI prompts και {botCount, plural, one {# AI bot} other {# AI bots}} που μοιράστηκε το μέλος {name} (@{username}) στο prompts.chat, τη δωρεάν βιβλιοθήκη prompts ανοιχτού κώδικα.",
+      "descriptionBotsOnly": "Δείτε {botCount, plural, one {# AI bot} other {# AI bots}} που μοιράστηκε το μέλος {name} (@{username}) στο prompts.chat, τη δωρεάν βιβλιοθήκη prompts ανοιχτού κώδικα."
     },
     "bookChapter": {
       "title": "{chapter} - Οδηγός Prompt Engineering"

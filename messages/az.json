@@ -2502,7 +2502,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - AI Promptları",
-      "description": "{name} (@{username}) tərəfindən pulsuz və açıq mənbəli prompt kitabxanası prompts.chat-da paylaşılan {count} AI promptuna baxın."
+      "description": "{name} (@{username}) tərəfindən pulsuz və açıq mənbəli prompt kitabxanası prompts.chat-da paylaşılan {count} AI promptuna baxın.",
+      "descriptionWithBots": "{name} (@{username}) tərəfindən pulsuz və açıq mənbəli prompt kitabxanası prompts.chat-da paylaşılan {count} AI promptuna və {botCount} AI botuna baxın.",
+      "descriptionBotsOnly": "{name} (@{username}) tərəfindən pulsuz və açıq mənbəli prompt kitabxanası prompts.chat-da paylaşılan {botCount} AI botuna baxın."
     },
     "bookChapter": {
       "title": "{chapter} - Prompt Mühəndisliyi Bələdçisi"

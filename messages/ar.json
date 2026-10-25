@@ -2488,7 +2488,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - أوامر الذكاء الاصطناعي",
-      "description": "تصفّح {count} من أوامر الذكاء الاصطناعي التي شاركها {name} (@{username}) على prompts.chat، مكتبة الأوامر المجانية ومفتوحة المصدر."
+      "description": "تصفّح {count} من أوامر الذكاء الاصطناعي التي شاركها {name} (@{username}) على prompts.chat، مكتبة الأوامر المجانية ومفتوحة المصدر.",
+      "descriptionWithBots": "تصفّح {count} من أوامر الذكاء الاصطناعي و{botCount} من بوتات الذكاء الاصطناعي التي شاركها {name} (@{username}) على prompts.chat، مكتبة الأوامر المجانية ومفتوحة المصدر.",
+      "descriptionBotsOnly": "تصفّح {botCount} من بوتات الذكاء الاصطناعي التي شاركها {name} (@{username}) على prompts.chat، مكتبة الأوامر المجانية ومفتوحة المصدر."
     },
     "bookChapter": {
       "title": "{chapter} - دليل هندسة الأوامر"

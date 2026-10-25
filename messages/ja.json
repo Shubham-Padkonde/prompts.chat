@@ -2490,7 +2490,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - AIプロンプト",
-      "description": "{name} (@{username}) さんがprompts.chatで公開しているAIプロンプト{count}件。prompts.chatは無料・オープンソースのプロンプトライブラリです。"
+      "description": "{name} (@{username}) さんがprompts.chatで公開しているAIプロンプト{count}件。prompts.chatは無料・オープンソースのプロンプトライブラリです。",
+      "descriptionWithBots": "{name} (@{username}) さんがprompts.chatで公開しているAIプロンプト{count}件とAIボット{botCount}件。prompts.chatは無料・オープンソースのプロンプトライブラリです。",
+      "descriptionBotsOnly": "{name} (@{username}) さんがprompts.chatで公開しているAIボット{botCount}件。prompts.chatは無料・オープンソースのプロンプトライブラリです。"
     },
     "bookChapter": {
       "title": "{chapter} - プロンプトエンジニアリングガイド"

@@ -2505,7 +2505,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - Prompts IA",
-      "description": "Parcourez {count} prompts IA partagés par {name} (@{username}) sur prompts.chat, la bibliothèque de prompts gratuite et open source."
+      "description": "Parcourez {count} prompts IA partagés par {name} (@{username}) sur prompts.chat, la bibliothèque de prompts gratuite et open source.",
+      "descriptionWithBots": "Parcourez {count} prompts IA et {botCount, plural, one {# bot IA} other {# bots IA}} partagés par {name} (@{username}) sur prompts.chat, la bibliothèque de prompts gratuite et open source.",
+      "descriptionBotsOnly": "Parcourez {botCount, plural, one {# bot IA} other {# bots IA}} partagés par {name} (@{username}) sur prompts.chat, la bibliothèque de prompts gratuite et open source."
     },
     "bookChapter": {
       "title": "{chapter} - Guide de l'ingénierie des prompts"

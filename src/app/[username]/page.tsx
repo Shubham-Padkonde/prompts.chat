@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "@/lib/date";
 import { getBotUrl, getPromptUrl } from "@/lib/urls";
 import { Calendar, ArrowBigUp, Bot, ChevronLeft, ChevronRight, FileText, Settings, GitPullRequest, Clock, Check, X, Pin, BadgeCheck, Users, ShieldCheck, Heart, ImageIcon } from "lucide-react";
 import { BotCard } from "@/components/bots/bot-card";
-import { listBotsByAuthor } from "@/lib/bots";
+import { listBotsByAuthor, publicBotWhere } from "@/lib/bots";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import config from "@/../prompts.config";
@@ -61,11 +61,18 @@ export async function generateMetadata({ params, searchParams }: UserProfilePage
     return { title: "User Not Found", robots: NOINDEX_ROBOTS };
   }
 
+  const publicBotCount = await db.prompt.count({ where: { ...publicBotWhere, author: { username: user.username } } });
+  const promptCount = user._count.prompts;
   const t = await getTranslations("seo");
   const name = user.name || user.username;
   const page = Math.max(1, parseInt(pageParam || "1") || 1);
   const title = t("profile.title", { name, username: user.username });
-  const description = t("profile.description", { name, username: user.username, count: user._count.prompts });
+  const descriptionValues = { name, username: user.username, count: promptCount, botCount: publicBotCount };
+  const description = publicBotCount === 0
+    ? t("profile.description", descriptionValues)
+    : promptCount === 0
+      ? t("profile.descriptionBotsOnly", descriptionValues)
+      : t("profile.descriptionWithBots", descriptionValues);
 
   return buildPageMetadata({
     title: page > 1 ? `${title} - ${t("page", { page })}` : title,
@@ -73,8 +80,8 @@ export async function generateMetadata({ params, searchParams }: UserProfilePage
     path: paginatedPath(`/@${user.username}`, page),
     openGraphType: "profile",
     image: "route",
-    // Profiles without public prompts are thin; secondary tabs and day filters repeat other pages
-    noindex: user._count.prompts === 0 || (!!tab && tab !== "prompts") || !!date,
+    // Profiles without public prompts or bots are thin; secondary tabs and day filters repeat other pages
+    noindex: (promptCount === 0 && publicBotCount === 0) || (!!tab && tab !== "prompts") || !!date,
   });
 }
 
@@ -194,7 +201,7 @@ export default async function UserProfilePage({ params, searchParams }: UserProf
   oneYearAgo.setHours(0, 0, 0, 0);
 
   // Fetch prompts, pinned prompts, contributions, liked prompts, user examples, counts, and activity data
-  const [promptsRaw, total, totalUpvotes, pinnedPromptsRaw, contributionsRaw, likedPromptsRaw, userExamplesRaw, privatePromptsCount, activityPrompts, activityVotes, activityChangeRequests, activityComments, { bots, total: botsTotal }] = await Promise.all([
+  const [promptsRaw, total, totalUpvotes, pinnedPromptsRaw, contributionsRaw, likedPromptsRaw, userExamplesRaw, privatePromptsCount, activityPrompts, activityVotes, activityChangeRequests, activityComments, { bots, total: botsTotal }, publicBotCount] = await Promise.all([
     db.prompt.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -311,6 +318,7 @@ export default async function UserProfilePage({ params, searchParams }: UserProf
       select: { createdAt: true },
     }),
     listBotsByAuthor(user.id, { includePrivate: isOwner, skip: (botsPage - 1) * perPage, take: perPage }),
+    db.prompt.count({ where: { ...publicBotWhere, authorId: user.id } }),
   ]);
 
   // Transform to include voteCount and contributorCount
@@ -491,6 +499,7 @@ export default async function UserProfilePage({ params, searchParams }: UserProf
           bio: user.bio,
           createdAt: user.createdAt,
           promptCount: user._count.prompts,
+          botCount: publicBotCount,
         })}
       />
       {/* Profile Header */}

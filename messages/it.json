@@ -2508,7 +2508,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - Prompt AI",
-      "description": "Sfoglia {count} prompt AI condivisi da {name} (@{username}) su prompts.chat, la libreria di prompt gratuita e open source."
+      "description": "Sfoglia {count} prompt AI condivisi da {name} (@{username}) su prompts.chat, la libreria di prompt gratuita e open source.",
+      "descriptionWithBots": "Sfoglia {count} prompt AI e {botCount} bot AI condivisi da {name} (@{username}) su prompts.chat, la libreria di prompt gratuita e open source.",
+      "descriptionBotsOnly": "Sfoglia {botCount} bot AI condivisi da {name} (@{username}) su prompts.chat, la libreria di prompt gratuita e open source."
     },
     "bookChapter": {
       "title": "{chapter} - Guida all'ingegneria dei prompt"

@@ -2486,7 +2486,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - פרומפטים ל-AI",
-      "description": "עיינו ב-{count} פרומפטים ל-AI מאת {name} (@{username}) ב-prompts.chat, ספריית הפרומפטים החינמית בקוד פתוח."
+      "description": "עיינו ב-{count} פרומפטים ל-AI מאת {name} (@{username}) ב-prompts.chat, ספריית הפרומפטים החינמית בקוד פתוח.",
+      "descriptionWithBots": "עיינו ב-{count} פרומפטים ו-{botCount, plural, one {בוט אחד} other {# בוטים}} ל-AI מאת {name} (@{username}) ב-prompts.chat, ספריית הפרומפטים החינמית בקוד פתוח.",
+      "descriptionBotsOnly": "עיינו ב-{botCount, plural, one {בוט אחד} other {# בוטים}} ל-AI מאת {name} (@{username}) ב-prompts.chat, ספריית הפרומפטים החינמית בקוד פתוח."
     },
     "bookChapter": {
       "title": "{chapter} - מדריך להנדסת פרומפטים"

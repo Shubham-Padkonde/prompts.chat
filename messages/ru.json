@@ -2487,7 +2487,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) — ИИ-промпты",
-      "description": "ИИ-промпты от {name} (@{username}) на prompts.chat — бесплатной библиотеке промптов с открытым кодом. Всего промптов: {count}."
+      "description": "ИИ-промпты от {name} (@{username}) на prompts.chat — бесплатной библиотеке промптов с открытым кодом. Всего промптов: {count}.",
+      "descriptionWithBots": "ИИ-промпты и ИИ-боты от {name} (@{username}) на prompts.chat — бесплатной библиотеке промптов с открытым кодом. Промптов: {count}, ботов: {botCount}.",
+      "descriptionBotsOnly": "ИИ-боты от {name} (@{username}) на prompts.chat — бесплатной библиотеке промптов с открытым кодом. Всего ботов: {botCount}."
     },
     "bookChapter": {
       "title": "{chapter} — руководство по промпт-инжинирингу"

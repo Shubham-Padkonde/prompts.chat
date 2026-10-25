@@ -2486,7 +2486,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - پرامپت‌های هوش مصنوعی",
-      "description": "{count} پرامپت هوش مصنوعی از {name} (@{username}) را در prompts.chat، کتابخانه رایگان و متن‌باز پرامپت، ببینید."
+      "description": "{count} پرامپت هوش مصنوعی از {name} (@{username}) را در prompts.chat، کتابخانه رایگان و متن‌باز پرامپت، ببینید.",
+      "descriptionWithBots": "{count} پرامپت و {botCount} بات هوش مصنوعی از {name} (@{username}) را در prompts.chat، کتابخانه رایگان و متن‌باز پرامپت، ببینید.",
+      "descriptionBotsOnly": "{botCount} بات هوش مصنوعی از {name} (@{username}) را در prompts.chat، کتابخانه رایگان و متن‌باز پرامپت، ببینید."
     },
     "bookChapter": {
       "title": "{chapter} - راهنمای مهندسی پرامپت"

@@ -2493,7 +2493,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - AI-prompts",
-      "description": "Bekijk {count} AI-prompts gedeeld door {name} (@{username}) op prompts.chat, de gratis open-source promptbibliotheek."
+      "description": "Bekijk {count} AI-prompts gedeeld door {name} (@{username}) op prompts.chat, de gratis open-source promptbibliotheek.",
+      "descriptionWithBots": "Bekijk {count} AI-prompts en {botCount, plural, one {# AI-bot} other {# AI-bots}} gedeeld door {name} (@{username}) op prompts.chat, de gratis open-source promptbibliotheek.",
+      "descriptionBotsOnly": "Bekijk {botCount, plural, one {# AI-bot} other {# AI-bots}} gedeeld door {name} (@{username}) op prompts.chat, de gratis open-source promptbibliotheek."
     },
     "bookChapter": {
       "title": "{chapter} - Gids voor prompt engineering"

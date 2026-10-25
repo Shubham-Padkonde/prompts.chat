@@ -2490,7 +2490,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - AI提示词",
-      "description": "浏览{name} (@{username}) 在prompts.chat分享的{count}条AI提示词。prompts.chat是免费开源的提示词库。"
+      "description": "浏览{name} (@{username}) 在prompts.chat分享的{count}条AI提示词。prompts.chat是免费开源的提示词库。",
+      "descriptionWithBots": "浏览{name} (@{username}) 在prompts.chat分享的{count}条AI提示词和{botCount}个AI机器人。prompts.chat是免费开源的提示词库。",
+      "descriptionBotsOnly": "浏览{name} (@{username}) 在prompts.chat分享的{botCount}个AI机器人。prompts.chat是免费开源的提示词库。"
     },
     "bookChapter": {
       "title": "{chapter} - 提示词工程指南"

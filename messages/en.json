@@ -2506,7 +2506,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - AI Prompts",
-      "description": "Browse {count} AI prompts shared by {name} (@{username}) on prompts.chat, the free and open-source prompt library."
+      "description": "Browse {count} AI prompts shared by {name} (@{username}) on prompts.chat, the free and open-source prompt library.",
+      "descriptionWithBots": "Browse {count} AI prompts and {botCount, plural, one {# AI bot} other {# AI bots}} shared by {name} (@{username}) on prompts.chat, the free and open-source prompt library.",
+      "descriptionBotsOnly": "Browse {botCount, plural, one {# AI bot} other {# AI bots}} shared by {name} (@{username}) on prompts.chat, the free and open-source prompt library."
     },
     "bookChapter": {
       "title": "{chapter} - Prompt Engineering Guide"

@@ -2502,7 +2502,9 @@
     },
     "profile": {
       "title": "{name} (@{username}) - KI-Prompts",
-      "description": "Entdecken Sie {count} KI-Prompts von {name} (@{username}) auf prompts.chat, der kostenlosen Open-Source-Bibliothek für Prompts."
+      "description": "Entdecken Sie {count} KI-Prompts von {name} (@{username}) auf prompts.chat, der kostenlosen Open-Source-Bibliothek für Prompts.",
+      "descriptionWithBots": "Entdecken Sie {count} KI-Prompts und {botCount, plural, one {# KI-Bot} other {# KI-Bots}} von {name} (@{username}) auf prompts.chat, der kostenlosen Open-Source-Bibliothek für Prompts.",
+      "descriptionBotsOnly": "Entdecken Sie {botCount, plural, one {# KI-Bot} other {# KI-Bots}} von {name} (@{username}) auf prompts.chat, der kostenlosen Open-Source-Bibliothek für Prompts."
     },
     "bookChapter": {
       "title": "{chapter} - Prompt-Engineering-Leitfaden"

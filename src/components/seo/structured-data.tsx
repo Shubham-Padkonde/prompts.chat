@@ -224,6 +224,8 @@ interface ProfilePageSchemaInput {
   bio?: string | null;
   createdAt: Date;
   promptCount: number;
+  /** Public bots; counted as authored works alongside prompts */
+  botCount?: number;
 }
 
 export function profilePageSchema(profile: ProfilePageSchemaInput): Schema {
@@ -244,7 +246,7 @@ export function profilePageSchema(profile: ProfilePageSchemaInput): Schema {
       interactionStatistic: {
         "@type": "InteractionCounter",
         interactionType: "https://schema.org/WriteAction",
-        userInteractionCount: profile.promptCount,
+        userInteractionCount: profile.promptCount + (profile.botCount ?? 0),
       },
     },
   };
