@@ -436,7 +436,8 @@
     "dismiss": "Elimina",
     "dismissed": "Richiesta di modifica eliminata",
     "dismissConfirmTitle": "Eliminare la Richiesta di Modifica?",
-    "dismissConfirmDescription": "Questo eliminerà permanentemente la tua richiesta di modifica. Questa azione non può essere annullata."
+    "dismissConfirmDescription": "Questo eliminerà permanentemente la tua richiesta di modifica. Questa azione non può essere annullata.",
+    "backToBot": "Torna al bot"
   },
   "categories": {
     "title": "Categorie",
@@ -826,7 +827,11 @@
     "getVerified": "Ottieni la Verifica",
     "examples": "Esempi",
     "noExamples": "Nessun esempio condiviso ancora",
-    "noExamplesOwner": "Non hai ancora condiviso nessun esempio"
+    "noExamplesOwner": "Non hai ancora condiviso nessun esempio",
+    "bots": "Bot",
+    "noBots": "Ancora nessun bot.",
+    "noBotsOwner": "Non hai ancora creato nessun bot.",
+    "createFirstBot": "Crea il tuo primo bot"
   },
   "subscription": {
     "subscribe": "Iscriviti",

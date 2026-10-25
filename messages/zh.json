@@ -436,7 +436,8 @@
     "dismiss": "撤回",
     "dismissed": "变更请求已撤回",
     "dismissConfirmTitle": "撤回变更请求？",
-    "dismissConfirmDescription": "这将永久删除您的变更请求。此操作无法撤销。"
+    "dismissConfirmDescription": "这将永久删除您的变更请求。此操作无法撤销。",
+    "backToBot": "返回机器人"
   },
   "categories": {
     "title": "分类",
@@ -826,7 +827,11 @@
     "getVerified": "获取认证",
     "examples": "示例",
     "noExamples": "还没有分享的示例",
-    "noExamplesOwner": "您还没有分享任何示例"
+    "noExamplesOwner": "您还没有分享任何示例",
+    "bots": "机器人",
+    "noBots": "暂无机器人。",
+    "noBotsOwner": "你还没有创建任何机器人。",
+    "createFirstBot": "创建你的第一个机器人"
   },
   "subscription": {
     "subscribe": "订阅",

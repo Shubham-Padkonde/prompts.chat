@@ -436,7 +436,8 @@
     "dismiss": "Geri Çek",
     "dismissed": "Değişiklik talebi geri çekildi",
     "dismissConfirmTitle": "Değişiklik Talebini Geri Çek?",
-    "dismissConfirmDescription": "Bu işlem değişiklik talebinizi kalıcı olarak silecektir. Bu işlem geri alınamaz."
+    "dismissConfirmDescription": "Bu işlem değişiklik talebinizi kalıcı olarak silecektir. Bu işlem geri alınamaz.",
+    "backToBot": "Bota dön"
   },
   "categories": {
     "title": "Kategoriler",
@@ -826,7 +827,11 @@
     "getVerified": "Doğrulanmış Ol",
     "examples": "Örnekler",
     "noExamples": "Henüz paylaşılan örnek yok",
-    "noExamplesOwner": "Henüz örnek paylaşmadınız"
+    "noExamplesOwner": "Henüz örnek paylaşmadınız",
+    "bots": "Botlar",
+    "noBots": "Henüz bot yok.",
+    "noBotsOwner": "Henüz hiç bot oluşturmadınız.",
+    "createFirstBot": "İlk botunuzu oluşturun"
   },
   "subscription": {
     "subscribe": "Abone Ol",

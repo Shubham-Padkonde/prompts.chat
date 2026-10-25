@@ -436,7 +436,8 @@
     "dismiss": "Dismiss",
     "dismissed": "Change request dismissed",
     "dismissConfirmTitle": "Dismiss Change Request?",
-    "dismissConfirmDescription": "This will permanently delete your change request. This action cannot be undone."
+    "dismissConfirmDescription": "This will permanently delete your change request. This action cannot be undone.",
+    "backToBot": "Back to bot"
   },
   "categories": {
     "title": "Categories",
@@ -826,7 +827,11 @@
     "getVerified": "Get Verified",
     "examples": "Examples",
     "noExamples": "No examples shared yet",
-    "noExamplesOwner": "You haven't shared any examples yet"
+    "noExamplesOwner": "You haven't shared any examples yet",
+    "bots": "Bots",
+    "noBots": "No bots yet.",
+    "noBotsOwner": "You haven't created any bots yet.",
+    "createFirstBot": "Create your first bot"
   },
   "subscription": {
     "subscribe": "Subscribe",

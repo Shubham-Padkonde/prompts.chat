@@ -436,7 +436,8 @@
     "dismiss": "בטל",
     "dismissed": "בקשת השינוי בוטלה",
     "dismissConfirmTitle": "לבטל בקשת שינוי?",
-    "dismissConfirmDescription": "פעולה זו תמחק לצמיתות את בקשת השינוי שלך. לא ניתן לבטל פעולה זו."
+    "dismissConfirmDescription": "פעולה זו תמחק לצמיתות את בקשת השינוי שלך. לא ניתן לבטל פעולה זו.",
+    "backToBot": "חזרה לבוט"
   },
   "categories": {
     "title": "קטגוריות",
@@ -826,7 +827,11 @@
     "getVerified": "התאמתות",
     "examples": "דוגמאות",
     "noExamples": "עדיין לא שותפו דוגמאות",
-    "noExamplesOwner": "עדיין לא שיתפת דוגמאות"
+    "noExamplesOwner": "עדיין לא שיתפת דוגמאות",
+    "bots": "בוטים",
+    "noBots": "אין עדיין בוטים.",
+    "noBotsOwner": "עדיין לא יצרת בוטים.",
+    "createFirstBot": "צור את הבוט הראשון שלך"
   },
   "subscription": {
     "subscribe": "הירשם",

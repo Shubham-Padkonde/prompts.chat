@@ -436,7 +436,8 @@
     "dismiss": "철회",
     "dismissed": "변경 요청이 철회되었습니다",
     "dismissConfirmTitle": "변경 요청을 철회하시겠습니까?",
-    "dismissConfirmDescription": "변경 요청이 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다."
+    "dismissConfirmDescription": "변경 요청이 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다.",
+    "backToBot": "봇으로 돌아가기"
   },
   "categories": {
     "title": "카테고리",
@@ -826,7 +827,11 @@
     "getVerified": "인증 받기",
     "examples": "예제",
     "noExamples": "아직 공유된 예제가 없습니다",
-    "noExamplesOwner": "아직 예제를 공유하지 않았습니다"
+    "noExamplesOwner": "아직 예제를 공유하지 않았습니다",
+    "bots": "봇",
+    "noBots": "아직 봇이 없습니다.",
+    "noBotsOwner": "아직 만든 봇이 없습니다.",
+    "createFirstBot": "첫 번째 봇 만들기"
   },
   "subscription": {
     "subscribe": "구독",

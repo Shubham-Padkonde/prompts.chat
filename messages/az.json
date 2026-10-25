@@ -436,7 +436,8 @@
     "dismiss": "Ləğv et",
     "dismissed": "Dəyişiklik sorğusu ləğv edildi",
     "dismissConfirmTitle": "Dəyişiklik Sorğusu Ləğv Edilsin?",
-    "dismissConfirmDescription": "Bu, dəyişiklik sorğunuzu birdəfəlik siləcək. Bu əməliyyat geri alına bilməz."
+    "dismissConfirmDescription": "Bu, dəyişiklik sorğunuzu birdəfəlik siləcək. Bu əməliyyat geri alına bilməz.",
+    "backToBot": "Bota qayıt"
   },
   "categories": {
     "title": "Kateqoriyalar",
@@ -826,7 +827,11 @@
     "getVerified": "Təsdiqlənin",
     "examples": "Nümunələr",
     "noExamples": "Hələ heç bir nümunə paylaşılmayıb",
-    "noExamplesOwner": "Hələ heç bir nümunə paylaşmamısınız"
+    "noExamplesOwner": "Hələ heç bir nümunə paylaşmamısınız",
+    "bots": "Botlar",
+    "noBots": "Hələ bot yoxdur.",
+    "noBotsOwner": "Siz hələ heç bir bot yaratmamısınız.",
+    "createFirstBot": "İlk botunuzu yaradın"
   },
   "subscription": {
     "subscribe": "Abunə ol",

@@ -436,7 +436,8 @@
     "dismiss": "Afwijzen",
     "dismissed": "Wijzigingsverzoek afgewezen",
     "dismissConfirmTitle": "Wijzigingsverzoek afwijzen?",
-    "dismissConfirmDescription": "Dit zal je wijzigingsverzoek permanent verwijderen. Deze actie kan niet ongedaan worden gemaakt."
+    "dismissConfirmDescription": "Dit zal je wijzigingsverzoek permanent verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
+    "backToBot": "Terug naar bot"
   },
   "categories": {
     "title": "Categorieën",
@@ -826,7 +827,11 @@
     "getVerified": "Word geverifieerd",
     "examples": "Voorbeelden",
     "noExamples": "Nog geen voorbeelden gedeeld",
-    "noExamplesOwner": "Je hebt nog geen voorbeelden gedeeld"
+    "noExamplesOwner": "Je hebt nog geen voorbeelden gedeeld",
+    "bots": "Bots",
+    "noBots": "Nog geen bots.",
+    "noBotsOwner": "Je hebt nog geen bots gemaakt.",
+    "createFirstBot": "Maak je eerste bot"
   },
   "subscription": {
     "subscribe": "Abonneren",

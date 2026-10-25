@@ -436,7 +436,8 @@
     "dismiss": "Retirer",
     "dismissed": "Demande de modification retirée",
     "dismissConfirmTitle": "Retirer la Demande de Modification ?",
-    "dismissConfirmDescription": "Cela supprimera définitivement votre demande de modification. Cette action ne peut pas être annulée."
+    "dismissConfirmDescription": "Cela supprimera définitivement votre demande de modification. Cette action ne peut pas être annulée.",
+    "backToBot": "Retour au bot"
   },
   "categories": {
     "title": "Catégories",
@@ -826,7 +827,11 @@
     "getVerified": "Se faire vérifier",
     "examples": "Exemples",
     "noExamples": "Aucun exemple partagé pour le moment",
-    "noExamplesOwner": "Vous n'avez pas encore partagé d'exemple"
+    "noExamplesOwner": "Vous n'avez pas encore partagé d'exemple",
+    "bots": "Bots",
+    "noBots": "Aucun bot pour le moment.",
+    "noBotsOwner": "Vous n'avez encore créé aucun bot.",
+    "createFirstBot": "Créez votre premier bot"
   },
   "subscription": {
     "subscribe": "S'abonner",

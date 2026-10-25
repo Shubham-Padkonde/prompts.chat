@@ -436,7 +436,8 @@
     "dismiss": "Retirar",
     "dismissed": "Solicitação de alteração retirada",
     "dismissConfirmTitle": "Retirar Solicitação de Alteração?",
-    "dismissConfirmDescription": "Isso excluirá permanentemente sua solicitação de alteração. Esta ação não pode ser desfeita."
+    "dismissConfirmDescription": "Isso excluirá permanentemente sua solicitação de alteração. Esta ação não pode ser desfeita.",
+    "backToBot": "Voltar ao bot"
   },
   "categories": {
     "title": "Categorias",
@@ -826,7 +827,11 @@
     "getVerified": "Obter Verificação",
     "examples": "Exemplos",
     "noExamples": "Nenhum exemplo compartilhado ainda",
-    "noExamplesOwner": "Você ainda não compartilhou nenhum exemplo"
+    "noExamplesOwner": "Você ainda não compartilhou nenhum exemplo",
+    "bots": "Bots",
+    "noBots": "Ainda não há bots.",
+    "noBotsOwner": "Você ainda não criou nenhum bot.",
+    "createFirstBot": "Crie seu primeiro bot"
   },
   "subscription": {
     "subscribe": "Inscrever-se",

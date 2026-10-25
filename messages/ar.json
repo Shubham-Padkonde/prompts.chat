@@ -436,7 +436,8 @@
     "dismiss": "سحب",
     "dismissed": "تم سحب طلب التغيير",
     "dismissConfirmTitle": "سحب طلب التغيير؟",
-    "dismissConfirmDescription": "سيؤدي هذا إلى حذف طلب التغيير نهائياً. لا يمكن التراجع عن هذا الإجراء."
+    "dismissConfirmDescription": "سيؤدي هذا إلى حذف طلب التغيير نهائياً. لا يمكن التراجع عن هذا الإجراء.",
+    "backToBot": "العودة إلى البوت"
   },
   "categories": {
     "title": "التصنيفات",
@@ -826,7 +827,11 @@
     "getVerified": "احصل على التحقق",
     "examples": "أمثلة",
     "noExamples": "لا توجد أمثلة مشاركة بعد",
-    "noExamplesOwner": "لم تشارك أي أمثلة بعد"
+    "noExamplesOwner": "لم تشارك أي أمثلة بعد",
+    "bots": "البوتات",
+    "noBots": "لا توجد بوتات بعد.",
+    "noBotsOwner": "لم تنشئ أي بوتات بعد.",
+    "createFirstBot": "أنشئ أول بوت لك"
   },
   "subscription": {
     "subscribe": "اشتراك",

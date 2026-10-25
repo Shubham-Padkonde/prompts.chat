@@ -1,9 +1,14 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { ArrowLeft, Clock, EyeOff, Pencil, Plug, Shield, Sparkles, Star, Trash2, Zap } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
+import { ArrowLeft, Clock, EyeOff, GitPullRequest, Pencil, Plug, Shield, Sparkles, Star, Trash2, Zap } from "lucide-react";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { getConfig } from "@/lib/config";
+import { CommentSection } from "@/components/comments";
+import { ChangeRequestList } from "@/components/prompts/change-request-list";
+import { UpvoteButton } from "@/components/prompts/upvote-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,6 +67,25 @@ export default async function BotPage({ params }: BotPageProps) {
   const canEdit = isOwner || isAdmin;
   const { routines, skills, connectors } = bot.config;
   const platformNames = bot.platforms.map((platform) => BOT_PLATFORM_INFO[platform].name);
+  const config = await getConfig();
+  const locale = await getLocale();
+  const tChanges = await getTranslations("changeRequests");
+  const canRequestChange = !!session?.user && !isOwner && !bot.isPrivate && !bot.deletedAt;
+
+  const [userVote, changeRequests] = await Promise.all([
+    session?.user
+      ? db.promptVote.findUnique({
+          where: { userId_promptId: { userId: session.user.id, promptId: bot.id } },
+          select: { userId: true },
+        })
+      : null,
+    db.changeRequest.findMany({
+      where: { promptId: bot.id },
+      orderBy: { createdAt: "desc" },
+      include: { author: { select: { id: true, name: true, username: true, avatar: true } } },
+    }),
+  ]);
+  const pendingCount = changeRequests.filter((cr) => cr.status === "PENDING").length;
 
   return (
     <div className="container max-w-5xl py-6 min-w-0">
@@ -110,14 +134,24 @@ export default async function BotPage({ params }: BotPageProps) {
           <ArrowLeft className="h-4 w-4" />
           {t("backToBots")}
         </Link>
-        {canEdit && (
-          <Button size="sm" variant="outline" className="h-8 text-xs" asChild>
-            <Link href={`${canonicalPath}/edit`}>
-              <Pencil className="h-3.5 w-3.5 mr-1" />
-              {t("edit")}
-            </Link>
-          </Button>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {canRequestChange && (
+            <Button size="sm" className="h-8 text-xs" asChild>
+              <Link href={`${canonicalPath}/changes/new`}>
+                <GitPullRequest className="h-3.5 w-3.5 mr-1" />
+                {tPrompts("createChangeRequest")}
+              </Link>
+            </Button>
+          )}
+          {canEdit && (
+            <Button size="sm" variant="outline" className="h-8 text-xs" asChild>
+              <Link href={`${canonicalPath}/edit`}>
+                <Pencil className="h-3.5 w-3.5 mr-1" />
+                {t("edit")}
+              </Link>
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="mb-6 space-y-3">
@@ -132,6 +166,13 @@ export default async function BotPage({ params }: BotPageProps) {
           {bot.isUnlisted && <Badge variant="outline">{t("unlisted")}</Badge>}
         </div>
         <div className="flex items-center gap-3">
+          <UpvoteButton
+            promptId={bot.id}
+            initialVoted={!!userVote}
+            initialCount={bot.voteCount}
+            isLoggedIn={!!session?.user}
+            size="circular"
+          />
           <BotAvatar icon={bot.icon} color={bot.color} size="lg" className="h-12 w-12 sm:h-14 sm:w-14" />
           <h1 className="min-w-0 flex-1 text-xl sm:text-2xl font-semibold wrap-anywhere">{bot.title}</h1>
         </div>
@@ -225,6 +266,33 @@ export default async function BotPage({ params }: BotPageProps) {
           <h2 className="text-base font-semibold">{t("install")}</h2>
           <BotInstall botId={bot.id} options={getBotInstallOptions(bot, baseUrl)} urls={getBotUrls(bot, baseUrl)} />
         </aside>
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="space-y-8 min-w-0">
+          {changeRequests.length > 0 && (
+            <section className="space-y-2">
+              <h2 className="flex items-center gap-2 text-base font-semibold">
+                <GitPullRequest className="h-4 w-4" />
+                {tChanges("title")}
+                {pendingCount > 0 && (
+                  <Badge variant="destructive" className="h-5 min-w-5 px-1 text-xs">{pendingCount}</Badge>
+                )}
+              </h2>
+              <ChangeRequestList changeRequests={changeRequests} basePath={canonicalPath} />
+            </section>
+          )}
+
+          {config.features.comments !== false && !bot.isPrivate && (
+            <CommentSection
+              promptId={bot.id}
+              currentUserId={session?.user?.id}
+              isAdmin={isAdmin}
+              isLoggedIn={!!session?.user}
+              locale={locale}
+            />
+          )}
+        </div>
       </div>
 
       {isAdmin && (

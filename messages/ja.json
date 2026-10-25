@@ -436,7 +436,8 @@
     "dismiss": "取り下げ",
     "dismissed": "変更リクエストを取り下げました",
     "dismissConfirmTitle": "変更リクエストを取り下げますか？",
-    "dismissConfirmDescription": "変更リクエストは完全に削除されます。この操作は取り消せません。"
+    "dismissConfirmDescription": "変更リクエストは完全に削除されます。この操作は取り消せません。",
+    "backToBot": "ボットに戻る"
   },
   "categories": {
     "title": "カテゴリー",
@@ -826,7 +827,11 @@
     "getVerified": "認証を取得",
     "examples": "例",
     "noExamples": "まだ例が共有されていません",
-    "noExamplesOwner": "まだ例を共有していません"
+    "noExamplesOwner": "まだ例を共有していません",
+    "bots": "ボット",
+    "noBots": "まだボットはありません。",
+    "noBotsOwner": "まだボットを作成していません。",
+    "createFirstBot": "最初のボットを作成"
   },
   "subscription": {
     "subscribe": "購読",
