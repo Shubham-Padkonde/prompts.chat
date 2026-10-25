@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { Clock, Star, Zap } from "lucide-react";
+import { ArrowBigUp, Clock, Star, Zap } from "lucide-react";
 import { BotCardLink } from "@/components/bots/bot-analytics";
 import { BotAvatar } from "@/components/bots/bot-avatar";
 import { BotPlatformIcons } from "@/components/bots/bot-platform-icons";
@@ -27,6 +27,7 @@ export interface BotCardData {
   isFeatured: boolean;
   config: Pick<BotConfig, "routines">;
   author: { username: string };
+  voteCount: number;
 }
 
 /** BOT-type prompt rows as returned by prompt list queries */
@@ -42,6 +43,8 @@ export interface BotPromptFields {
   botPlatform?: BotPlatform | null;
   botConfig?: unknown;
   author: { username: string };
+  voteCount?: number;
+  _count?: { votes?: number };
 }
 
 export function promptToBotCardData(prompt: BotPromptFields): BotCardData {
@@ -56,6 +59,7 @@ export function promptToBotCardData(prompt: BotPromptFields): BotCardData {
     isFeatured: prompt.isFeatured ?? false,
     config: parseBotConfig(prompt.botConfig),
     author: prompt.author,
+    voteCount: prompt.voteCount ?? prompt._count?.votes ?? 0,
   };
 }
 
@@ -103,6 +107,10 @@ export function BotCard({ bot, position }: BotCardProps) {
             {t("eventCount", { count: events })}
           </span>
         )}
+        <span className="ml-auto flex items-center gap-0.5">
+          <ArrowBigUp className="h-3.5 w-3.5" />
+          {bot.voteCount}
+        </span>
       </div>
     </BotCardLink>
   );
