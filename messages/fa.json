@@ -924,6 +924,7 @@
     "description": "ربات‌های آماده عامل هوش مصنوعی با دستورالعمل‌ها، روال‌ها و مهارت‌ها. آن‌ها را روی OpenClaw، Hermes Agent یا Grok Bot نصب کنید.",
     "count": "{count, plural, other {# ربات}}",
     "allPlatforms": "همه",
+    "searchPlaceholder": "جستجوی بات‌ها...",
     "noBots": "هنوز رباتی برای این پلتفرم وجود ندارد.",
     "scheduledCount": "{count, plural, other {# روال زمان‌بندی‌شده}}",
     "eventCount": "{count, plural, other {# محرک رویداد}}",

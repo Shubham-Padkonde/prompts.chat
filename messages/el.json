@@ -924,6 +924,7 @@
     "description": "Έτοιμα bots πρακτόρων AI με οδηγίες, ρουτίνες και δεξιότητες. Εγκαταστήστε τα στο OpenClaw, στο Hermes Agent ή στο Grok Bot.",
     "count": "{count, plural, one {# bot} other {# bots}}",
     "allPlatforms": "Όλα",
+    "searchPlaceholder": "Αναζήτηση bots...",
     "noBots": "Δεν υπάρχουν ακόμη bots για αυτή την πλατφόρμα.",
     "scheduledCount": "{count, plural, one {# προγραμματισμένη ρουτίνα} other {# προγραμματισμένες ρουτίνες}}",
     "eventCount": "{count, plural, one {# έναυσμα συμβάντος} other {# εναύσματα συμβάντων}}",

@@ -924,6 +924,7 @@
     "description": "Təlimatları, rutinləri və bacarıqları olan hazır süni intellekt agent botları. Onları OpenClaw, Hermes Agent və ya Grok Bot-a quraşdırın.",
     "count": "{count, plural, one {# bot} other {# bot}}",
     "allPlatforms": "Hamısı",
+    "searchPlaceholder": "Botlarda axtar...",
     "noBots": "Bu platforma üçün hələ bot yoxdur.",
     "scheduledCount": "{count, plural, one {# planlaşdırılmış rutin} other {# planlaşdırılmış rutin}}",
     "eventCount": "{count, plural, one {# hadisə tetikleyicisi} other {# hadisə tetikleyicisi}}",

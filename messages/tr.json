@@ -924,6 +924,7 @@
     "description": "Talimatları, rutinleri ve becerileriyle hazır yapay zekâ ajan botları. OpenClaw, Hermes Agent veya Grok Bot'a kurun.",
     "count": "{count, plural, one {# bot} other {# bot}}",
     "allPlatforms": "Tümü",
+    "searchPlaceholder": "Bot ara...",
     "noBots": "Bu platform için henüz bot yok.",
     "scheduledCount": "{count, plural, one {# zamanlanmış rutin} other {# zamanlanmış rutin}}",
     "eventCount": "{count, plural, one {# olay tetikleyici} other {# olay tetikleyici}}",

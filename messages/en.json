@@ -924,6 +924,7 @@
     "description": "Ready-made AI agent bots with instructions, routines and skills. Install them on OpenClaw, Hermes Agent or Grok Bot.",
     "count": "{count, plural, one {# bot} other {# bots}}",
     "allPlatforms": "All",
+    "searchPlaceholder": "Search bots...",
     "noBots": "No bots for this platform yet.",
     "scheduledCount": "{count, plural, one {# scheduled routine} other {# scheduled routines}}",
     "eventCount": "{count, plural, one {# event trigger} other {# event triggers}}",

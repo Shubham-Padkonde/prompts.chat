@@ -924,6 +924,7 @@
     "description": "בוטים מוכנים של סוכני בינה מלאכותית עם הנחיות, שגרות ומיומנויות. התקינו אותם ב-OpenClaw, ב-Hermes Agent או ב-Grok Bot.",
     "count": "{count, plural, one {בוט אחד} other {# בוטים}}",
     "allPlatforms": "הכול",
+    "searchPlaceholder": "חיפוש בוטים...",
     "noBots": "עדיין אין בוטים לפלטפורמה הזו.",
     "scheduledCount": "{count, plural, one {שגרה מתוזמנת אחת} other {# שגרות מתוזמנות}}",
     "eventCount": "{count, plural, one {טריגר אירוע אחד} other {# טריגרי אירועים}}",

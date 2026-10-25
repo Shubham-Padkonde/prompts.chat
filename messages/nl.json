@@ -924,6 +924,7 @@
     "description": "Kant-en-klare AI-agentbots met instructies, routines en skills. Installeer ze op OpenClaw, Hermes Agent of Grok Bot.",
     "count": "{count, plural, one {# bot} other {# bots}}",
     "allPlatforms": "Alle",
+    "searchPlaceholder": "Bots zoeken...",
     "noBots": "Nog geen bots voor dit platform.",
     "scheduledCount": "{count, plural, one {# geplande routine} other {# geplande routines}}",
     "eventCount": "{count, plural, one {# gebeurtenistrigger} other {# gebeurtenistriggers}}",

@@ -924,6 +924,7 @@
     "description": "Fertige KI-Agenten-Bots mit Anweisungen, Routinen und Skills. Installiere sie auf OpenClaw, Hermes Agent oder Grok Bot.",
     "count": "{count, plural, one {# Bot} other {# Bots}}",
     "allPlatforms": "Alle",
+    "searchPlaceholder": "Bots durchsuchen...",
     "noBots": "Für diese Plattform gibt es noch keine Bots.",
     "scheduledCount": "{count, plural, one {# geplante Routine} other {# geplante Routinen}}",
     "eventCount": "{count, plural, one {# Ereignis-Trigger} other {# Ereignis-Trigger}}",

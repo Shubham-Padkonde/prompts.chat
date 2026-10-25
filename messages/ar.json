@@ -924,6 +924,7 @@
     "description": "بوتات وكلاء ذكاء اصطناعي جاهزة مع التعليمات والمهام الروتينية والمهارات. ثبّتها على OpenClaw أو Hermes Agent أو Grok Bot.",
     "count": "{count, plural, zero {لا توجد بوتات} one {بوت واحد} two {بوتان} few {# بوتات} many {# بوتًا} other {# بوت}}",
     "allPlatforms": "الكل",
+    "searchPlaceholder": "ابحث في البوتات...",
     "noBots": "لا توجد بوتات لهذه المنصة بعد.",
     "scheduledCount": "{count, plural, one {مهمة مجدولة واحدة} two {مهمتان مجدولتان} few {# مهام مجدولة} many {# مهمة مجدولة} other {# مهمة مجدولة}}",
     "eventCount": "{count, plural, one {مشغّل حدث واحد} two {مشغّلا حدث} few {# مشغّلات أحداث} many {# مشغّل حدث} other {# مشغّل حدث}}",

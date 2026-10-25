@@ -924,6 +924,7 @@
     "description": "指示・ルーティン・スキルを備えたすぐに使える AI エージェントボット。OpenClaw、Hermes Agent、Grok Bot にインストールできます。",
     "count": "{count, plural, other {# 件のボット}}",
     "allPlatforms": "すべて",
+    "searchPlaceholder": "ボットを検索...",
     "noBots": "このプラットフォームのボットはまだありません。",
     "scheduledCount": "{count, plural, other {# 件の定期ルーティン}}",
     "eventCount": "{count, plural, other {# 件のイベントトリガー}}",

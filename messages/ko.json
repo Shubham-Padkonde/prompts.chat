@@ -924,6 +924,7 @@
     "description": "지침, 루틴, 스킬을 갖춘 바로 쓸 수 있는 AI 에이전트 봇입니다. OpenClaw, Hermes Agent 또는 Grok Bot에 설치하세요.",
     "count": "{count, plural, other {봇 #개}}",
     "allPlatforms": "전체",
+    "searchPlaceholder": "봇 검색...",
     "noBots": "이 플랫폼용 봇이 아직 없습니다.",
     "scheduledCount": "{count, plural, other {예약 루틴 #개}}",
     "eventCount": "{count, plural, other {이벤트 트리거 #개}}",
