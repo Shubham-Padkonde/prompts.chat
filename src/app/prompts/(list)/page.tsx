@@ -15,6 +15,7 @@ import { db } from "@/lib/db";
 import { isAISearchEnabled, semanticSearch } from "@/lib/ai/embeddings";
 import { isAIGenerationEnabled } from "@/lib/ai/generation";
 import { buildPageMetadata } from "@/lib/seo";
+import { promptListTypeWhere } from "@/lib/prompt-list";
 import config from "@/../prompts.config";
 
 export const revalidate = 60;
@@ -288,9 +289,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
       }
     }
     
-    if (params.type) {
-      where.type = params.type;
-    }
+    Object.assign(where, promptListTypeWhere(params.type));
     
     if (params.category) {
       where.categoryId = activeCategory?.id ?? params.category;

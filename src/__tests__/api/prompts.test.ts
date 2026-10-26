@@ -131,6 +131,35 @@ describe("GET /api/prompts", () => {
     );
   });
 
+  it("should exclude bots when no type is given", async () => {
+    vi.mocked(db.prompt.findMany).mockResolvedValue([]);
+    vi.mocked(db.prompt.count).mockResolvedValue(0);
+
+    await GET(new Request("http://localhost:3000/api/prompts"));
+
+    expect(db.prompt.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ type: { not: "BOT" } }),
+      })
+    );
+    expect(db.prompt.count).toHaveBeenCalledWith({
+      where: expect.objectContaining({ type: { not: "BOT" } }),
+    });
+  });
+
+  it("should return bots when type=BOT is requested", async () => {
+    vi.mocked(db.prompt.findMany).mockResolvedValue([]);
+    vi.mocked(db.prompt.count).mockResolvedValue(0);
+
+    await GET(new Request("http://localhost:3000/api/prompts?type=BOT"));
+
+    expect(db.prompt.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ type: "BOT" }),
+      })
+    );
+  });
+
   it("should filter by category", async () => {
     vi.mocked(db.prompt.findMany).mockResolvedValue([]);
     vi.mocked(db.prompt.count).mockResolvedValue(0);

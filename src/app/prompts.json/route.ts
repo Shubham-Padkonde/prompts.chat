@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { NON_BOT_PROMPTS } from "@/lib/prompt-list";
 import crypto from "crypto";
 
 function getUserIdentifier(user: {
@@ -41,6 +42,7 @@ export async function GET(request: NextRequest) {
       isPrivate: false,
       isUnlisted: false,
       deletedAt: null,
+      ...NON_BOT_PROMPTS,
     };
 
     // Fetch total count and latest updatedAt for ETag generation
