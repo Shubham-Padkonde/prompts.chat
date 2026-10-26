@@ -16,6 +16,7 @@ import { isAISearchEnabled, semanticSearch } from "@/lib/ai/embeddings";
 import { isAIGenerationEnabled } from "@/lib/ai/generation";
 import { buildPageMetadata } from "@/lib/seo";
 import { promptListTypeWhere } from "@/lib/prompt-list";
+import { trendingWhere } from "@/lib/trending";
 import config from "@/../prompts.config";
 
 export const revalidate = 60;
@@ -167,6 +168,7 @@ interface PromptsPageProps {
     sort?: string;
     page?: string;
     ai?: string;
+    trending?: string;
   }>;
 }
 
@@ -182,7 +184,7 @@ function findCategory(categories: Awaited<ReturnType<typeof getCategories>>, par
 export async function generateMetadata({ searchParams }: PromptsPageProps): Promise<Metadata> {
   const params = await searchParams;
   const t = await getTranslations("seo");
-  const filters = [params.q, params.type, params.category, params.tag].filter(Boolean);
+  const filters = [params.q, params.type, params.category, params.tag, params.trending].filter(Boolean);
 
   // A single category or tag filter shows the same prompts as its own landing page
   if (filters.length === 1 && params.category) {
@@ -290,6 +292,10 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
     }
     
     Object.assign(where, promptListTypeWhere(params.type));
+
+    if (params.trending === "1") {
+      Object.assign(where, trendingWhere());
+    }
     
     if (params.category) {
       where.categoryId = activeCategory?.id ?? params.category;
@@ -368,6 +374,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
               tags={tags}
               currentFilters={params}
               aiSearchEnabled={aiSearchAvailable}
+              showTrendingFilter
             />
           </aside>
           <main className="flex-1 min-w-0">
@@ -381,6 +388,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
                 categorySlug: activeCategory?.slug,
                 tag: params.tag,
                 sort: params.sort,
+                trending: params.trending === "1" ? "1" : undefined,
               }}
             />
           </main>

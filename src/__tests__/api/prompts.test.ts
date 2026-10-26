@@ -147,6 +147,38 @@ describe("GET /api/prompts", () => {
     });
   });
 
+  it("should exclude bots from the trending filter by default", async () => {
+    vi.mocked(db.prompt.findMany).mockResolvedValue([]);
+    vi.mocked(db.prompt.count).mockResolvedValue(0);
+
+    await GET(new Request("http://localhost:3000/api/prompts?trending=1"));
+
+    expect(db.prompt.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          type: { not: "BOT" },
+          trendingUntil: { gt: expect.any(Date) },
+        }),
+      })
+    );
+  });
+
+  it("should return trending bots when type=BOT and trending=1 are requested", async () => {
+    vi.mocked(db.prompt.findMany).mockResolvedValue([]);
+    vi.mocked(db.prompt.count).mockResolvedValue(0);
+
+    await GET(new Request("http://localhost:3000/api/prompts?trending=1&type=BOT"));
+
+    expect(db.prompt.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          type: "BOT",
+          trendingUntil: { gt: expect.any(Date) },
+        }),
+      })
+    );
+  });
+
   it("should return bots when type=BOT is requested", async () => {
     vi.mocked(db.prompt.findMany).mockResolvedValue([]);
     vi.mocked(db.prompt.count).mockResolvedValue(0);
